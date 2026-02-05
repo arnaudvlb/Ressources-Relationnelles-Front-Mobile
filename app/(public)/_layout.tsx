@@ -1,25 +1,24 @@
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
 
-import { useColorScheme } from "@/hooks/use-color-scheme";
-
-export default function MainTabsLayout() {
-
-  // Récupération du thème actuel (light ou dark)
+export default function PublicTabsLayout() {
   const colorScheme = useColorScheme();
 
   return (
     <Tabs
       screenOptions={{
+
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+    
         headerShown: false,
       }}
     >
-
-      {/* Onglet Home / Bienvenue */}
+      {/* Onglet Accueil public (Bienvenue) */}
       <Tabs.Screen
         name="index"
         options={{
@@ -30,18 +29,23 @@ export default function MainTabsLayout() {
         }}
       />
 
-
-      {/* Onglet Profil / Compte */}
+      {/* Onglet Connexion (public) */}
       <Tabs.Screen
-        name="profile"
+        name="login"
         options={{
-          title: "Compte",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="person.fill" color={color} />
+          title: "Connexion",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-circle" size={size ?? 28} color={color} />
           ),
         }}
       />
 
+        <Tabs.Screen
+            name="register"
+            options={{
+                href: null, // cache complètement l’onglet
+            }}
+            />
     </Tabs>
   );
 }

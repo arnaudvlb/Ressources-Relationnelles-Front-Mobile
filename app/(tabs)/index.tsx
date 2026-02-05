@@ -1,32 +1,44 @@
-import { Colors } from "@/constants/theme";
-import { Text, useColorScheme, View } from "react-native";
 
-export default function Index() {
+import { Colors } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { makeHomePrivateStyles } from "@/styles/homePrivateStyles";
+import { router } from "expo-router";
+import React from "react";
+import { Pressable, Text, View } from "react-native";
+
+
+export default function Home() {
+
+  // Récupération du thème actuel
   const scheme = useColorScheme() ?? "dark";
   const colors = Colors[scheme];
+  const styles = makeHomePrivateStyles(colors);
+
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background, padding: 24 }}>
-      <View
-        style={{
-          backgroundColor: colors.card,
-          borderRadius: 18,
-          padding: 24,
-          borderWidth: 1,
-          borderColor: colors.border,
-        }}
-      >
-        <Text style={{ color: colors.text, fontSize: 22, fontWeight: "700" }}>
-          Thème OK ✅
-        </Text>
+   
+    <View style={styles.screen}>
 
-        <Text style={{ color: colors.muted, marginTop: 10 }}>
-          Bleu / vert / jaune actif
-        </Text>
+      <Text style={styles.title}>Accueil</Text>
+      <Text style={styles.subtitle}>
+        Ceci est la Home privée (dans les tabs). Ici on mettra plus tard les fonctions principales de l’app.
+      </Text>
 
-        <Text style={{ color: colors.accent, marginTop: 10, fontWeight: "700" }}>
-          Accent jaune 💛
-        </Text>
+      <View style={styles.card}>
+        <Pressable
+          onPress={() => {}}
+          style={styles.primaryButton}
+        >
+          <Text style={styles.primaryButtonText}>Action principale (à définir)</Text>
+        </Pressable>
+
+        <Pressable
+          onPress={() => router.push("/(tabs)/profile")}
+          style={styles.secondaryButton}
+        >
+          <Text style={styles.secondaryButtonText}>Aller au profil</Text>
+        </Pressable>
+
       </View>
     </View>
   );
