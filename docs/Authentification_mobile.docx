@@ -1,0 +1,9 @@
+La connexion permet à l’utilisateur d’accéder à des fonctionnalités supplémentaires telles que le partage de ressources ou encore l’envoi de messages privés. Elle repose sur un mécanisme d’authentification basé sur l’utilisation d’un access token et d’un refresh token.
+
+Le refresh token permet de générer un access token. L’access token est ensuite stocké localement sur le terminal de l’utilisateur. Il sert à authentifier l’utilisateur tout au long de son parcours dans l’application et doit être transmis avec chaque requête effectuée vers l’API afin de prouver l’identité de l’utilisateur.
+
+Une fois connecté, l’utilisateur a accès à l’ensemble des fonctionnalités de l’application. Étant donné qu’il s’agit d’une application mobile, l’utilisateur doit se déconnecter manuellement s’il souhaite mettre fin à sa session, ce qui permet une utilisation plus pratique au quotidien. Toutefois, par mesure de sécurité, une déconnexion automatique est prévue après un mois sans utilisation de l’application.
+
+Afin de renforcer la sécurité, le nombre de tentatives de connexion est limité. L’utilisateur dispose de trois essais pour saisir son mot de passe. En cas d’échec, il devra attendre dix minutes avant de pouvoir tenter une nouvelle connexion, ce qui permet de limiter les attaques par force brute.
+
+Enfin, un compte utilisateur peut être désactivé, notamment par un administrateur. Dans ce cas, l’utilisateur devra contacter un administrateur afin de demander la réactivation de son compte ou, si nécessaire, procéder à la création d’un nouveau compte.

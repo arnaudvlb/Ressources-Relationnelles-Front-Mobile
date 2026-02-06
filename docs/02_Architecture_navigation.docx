@@ -1,0 +1,10 @@
+
+La navigation des utilisateurs est définie en fonction de leur rôle au sein de l’application. Comme vu précédemment, les utilisateurs peuvent posséder cinq types de rôles différents. Cette organisation a conduit à la mise en place de cinq types de dossiers distincts, chacun correspondant à un niveau d’accès spécifique.
+
+Le choix du dossier à utiliser est déterminé dynamiquement par le fichier RoleApp/Layout.tsx, qui agit comme point central de décision pour l’orientation de l’utilisateur dans l’application.
+
+Dans un premier temps, l’architecture repose sur deux dossiers principaux.
+Le dossier Public regroupe l’ensemble des pages accessibles sans authentification, telles que l’écran de bienvenue, la connexion ou l’inscription.
+Le dossier Tabs regroupe les pages accessibles uniquement après authentification, c’est-à-dire une fois que l’utilisateur est connecté à l’application.
+
+Ce choix d’architecture a été effectué afin d’apporter une meilleure clarté dans le développement de l’application, en séparant clairement les parties publiques et privées. Il permet également de renforcer la sécurité en limitant l’accès aux fonctionnalités sensibles aux seuls utilisateurs authentifiés. Enfin, cette organisation améliore la maintenabilité du projet et facilite son évolution future, notamment en cas d’ajout de nouveaux rôles ou de nouvelles fonctionnalités.
