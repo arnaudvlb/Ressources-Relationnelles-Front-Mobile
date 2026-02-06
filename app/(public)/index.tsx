@@ -2,7 +2,8 @@
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { makeHomePublicStyles } from "@/styles/homePublicStyles";
-import { Text, View } from "react-native";
+import { Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Home(){
   //Theme
@@ -12,7 +13,7 @@ export default function Home(){
 
    return (
     // Conteneur principal avec le style séparé
-    <View style={styles.screen}>
+    <SafeAreaView style={styles.screen}>
       {/* Texte principal */}
       <Text style={styles.title}>Bienvenue 👋</Text>
 
@@ -20,7 +21,7 @@ export default function Home(){
       <Text style={styles.subtitle}>
         Pour l’instant, on met juste la navigation entre Accueil, Connexion et Compte.
       </Text>
-    </View>
+    </SafeAreaView>
   );
 }
 

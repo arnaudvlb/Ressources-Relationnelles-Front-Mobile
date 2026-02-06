@@ -5,6 +5,8 @@ import { makeHomePrivateStyles } from "@/styles/homePrivateStyles";
 import { router } from "expo-router";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 
 
 export default function Home() {
@@ -17,7 +19,7 @@ export default function Home() {
 
   return (
    
-    <View style={styles.screen}>
+    <SafeAreaView style={styles.screen}>
 
       <Text style={styles.title}>Accueil</Text>
       <Text style={styles.subtitle}>
@@ -40,6 +42,6 @@ export default function Home() {
         </Pressable>
 
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

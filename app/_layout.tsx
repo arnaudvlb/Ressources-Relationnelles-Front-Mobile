@@ -1,31 +1,19 @@
 
 import { Stack } from "expo-router";
 import React from "react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 
 export default function RootLayout() {
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <Stack.Screen
-        name="(public)"
-        options={{ headerShown: false }}
-      />
-
-      <Stack.Screen
-        name="(tabs)"
-        options={{ headerShown: false }}
-      />
-
-
-      <Stack.Screen
-        name="modal"
-        options={{ presentation: "modal" }}
-      />
+  <SafeAreaProvider>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(public)" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="register" options={{ headerShown: false }} />
+      <Stack.Screen name="modal" options={{ presentation: "modal" }} />
     </Stack>
-  );
+  </SafeAreaProvider>
+);
 }

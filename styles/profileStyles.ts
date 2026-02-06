@@ -43,5 +43,25 @@ export function makeProfileStyles(colors: any) {
       fontWeight: "900",
       fontSize: 16,
     },
+
+    /* ========================= */
+    /* ===== AJOUT ADMIN ======= */
+    /* ========================= */
+
+    adminButton: {
+      marginTop: 6,
+      paddingVertical: 14,
+      borderRadius: 14,
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: "#2563EB",
+      backgroundColor: "#2563EB1A",
+    },
+
+    adminText: {
+      color: "#2563EB",
+      fontWeight: "900",
+      fontSize: 16,
+    },
   });
 }

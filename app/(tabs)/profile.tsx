@@ -4,6 +4,22 @@ import { removeAccessToken } from "@/services/authStorage";
 import { makeProfileStyles } from "@/styles/profileStyles";
 import { router } from "expo-router";
 import { Alert, Pressable, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+
+// Définition des rôles possibles
+type Role =
+  | "ROLE_USER"
+  | "ROLE_MODERATEUR"
+  | "ROLE_ADMIN"
+  | "ROLE_SUPER_ADMIN";
+
+// ⚠️ Simulation du rôle utilisateur connecté
+// Plus tard, ça viendra de l’API (GET /me)
+const CURRENT_ROLE: Role = "ROLE_ADMIN";
+
+
+
 
 
 export default function Profile()  {
@@ -39,9 +55,15 @@ export default function Profile()  {
     );
   }
 
+//droit  backoff
+const canAccessAdmin =
+    CURRENT_ROLE === "ROLE_MODERATEUR" ||
+    CURRENT_ROLE === "ROLE_ADMIN" ||
+    CURRENT_ROLE === "ROLE_SUPER_ADMIN";
+
 
   return(
-    <View style={styles.screen}>
+    <SafeAreaView style={styles.screen}>
         <Text style={styles.title}>Profile</Text>
 
         <View style={styles.card}>
@@ -51,6 +73,17 @@ export default function Profile()  {
                 <Text style={styles.logoutText}>Se déconnecter</Text>
              </Pressable>
         </View>
-    </View>
+
+        {canAccessAdmin ? (
+        <Pressable
+          onPress={() => router.push("/admin/users")}
+          style={styles.adminButton}
+        >
+          <Text style={styles.adminText}>
+            Gestion des utilisateurs
+          </Text>
+        </Pressable>
+      ) : null}
+    </SafeAreaView>
   )
 }

@@ -5,6 +5,7 @@ import { makeLoginStyles } from "@/styles/loginStyles";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Pressable, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 export default function Login(){
@@ -38,7 +39,7 @@ export default function Login(){
     //Affichage du composant 
     return (
 
-         <View style={styles.screen}>
+         <SafeAreaView style={styles.screen}>
 
          <Text style={styles.title}>Connexion</Text>
          <Text style={styles.subtitle}>Renseignez vos identifiaant pour accéder à l'application</Text>
@@ -74,7 +75,7 @@ export default function Login(){
 
          </View>
 
-         </View>
+         </SafeAreaView>
 
     )
 

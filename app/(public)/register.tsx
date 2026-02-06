@@ -8,6 +8,7 @@ import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 
@@ -109,7 +110,11 @@ export default function Register(){
 
     //Interface utilisateur 
     return (
-        <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS==="ios"?"padding":undefined}>
+        <SafeAreaView style={styles.screen}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
             <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
                 <Text style={styles.title}>Inscription</Text>
                 <Text style={styles.subtitle}>  Crée ton compte. Pour l’instant c’est simulé, mais l’écran est prêt pour brancher l’API.</Text>
@@ -211,6 +216,7 @@ export default function Register(){
                 </View>
             </ScrollView>
         </KeyboardAvoidingView>
+        </SafeAreaView>
     )
 
 }

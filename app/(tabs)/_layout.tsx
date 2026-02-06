@@ -1,10 +1,9 @@
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { Tabs } from "expo-router";
 import React from "react";
-
-import { useColorScheme } from "@/hooks/use-color-scheme";
 
 export default function MainTabsLayout() {
 
@@ -12,14 +11,13 @@ export default function MainTabsLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <Tabs
+     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
       }}
     >
-
-      {/* Onglet Home / Bienvenue */}
+      {/* Onglet Accueil */}
       <Tabs.Screen
         name="index"
         options={{
@@ -30,8 +28,7 @@ export default function MainTabsLayout() {
         }}
       />
 
-
-      {/* Onglet Profil / Compte */}
+      {/* Onglet Compte */}
       <Tabs.Screen
         name="profile"
         options={{
@@ -42,6 +39,22 @@ export default function MainTabsLayout() {
         }}
       />
 
+      {/* Cache Explore si le fichier existe encore */}
+      <Tabs.Screen
+        name="explore"
+        options={{
+          href: null,
+        }}
+      />
+
+      {/* Cache la route admin/users (sous-dossier admin) */}
+      <Tabs.Screen
+        name="admin/users"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
+
 }
