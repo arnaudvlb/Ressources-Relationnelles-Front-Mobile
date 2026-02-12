@@ -1,0 +1,16 @@
+import { User } from "@/types/users";
+
+export const MOCK_USERS: User[] = [
+  {
+    id_utilisateur: 1,
+    nom: "Pastourel",
+    prenom: "Andrea",
+    telephone: "0600000000",
+    email: "andrea@mail.com",
+    pseudo: "pommepote",
+    photo_profil: null,
+    statut_compte: "ACTIF",
+    date_creation: "2026-01-01",
+    role: "ROLE_USER",
+  },
+];
