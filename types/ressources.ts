@@ -4,7 +4,7 @@ import { Tag } from "./tags";
 import { Type } from "./types";
 import { User } from "./users";
 
-export type dbRessource = {
+export type Ressource = {
   id_ressource: number;
   titre: string;
   contenu: string;
@@ -15,7 +15,7 @@ export type dbRessource = {
   visibilite: "PUBLIC" | "PRIVE";
   type: Type;
   auteur: User;
-  categorie?: Categorie | null;
+  categorie: Categorie ;
   tags: Tag[];
   medias: Media[];
   adore_count: number;

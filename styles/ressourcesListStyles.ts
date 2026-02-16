@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export function makeResourcesStyles(colors: any) {
+export function makeResourcesListStyles(colors: any) {
   return StyleSheet.create({
     screen: {
       flex: 1,
@@ -18,40 +18,6 @@ export function makeResourcesStyles(colors: any) {
       fontSize: 14,
       lineHeight: 20,
     },
-    search: {
-      borderWidth: 1,
-      borderColor: colors.border,
-      backgroundColor: colors.card,
-      borderRadius: 14,
-      paddingHorizontal: 12,
-      paddingVertical: 12,
-      color: colors.text,
-    },
-    filtersRow: {
-      flexDirection: "row",
-      gap: 10,
-      flexWrap: "wrap",
-    },
-    chip: {
-      paddingHorizontal: 12,
-      paddingVertical: 10,
-      borderRadius: 999,
-      borderWidth: 1,
-      borderColor: colors.border,
-      backgroundColor: colors.card,
-    },
-    chipActive: {
-      borderColor: colors.tint,
-      backgroundColor: `${colors.tint}1A`,
-    },
-    chipText: {
-      color: colors.text,
-      fontWeight: "800",
-      fontSize: 12,
-    },
-    chipTextActive: {
-      color: colors.tint,
-    },
     listContent: {
       gap: 12,
       paddingBottom: 24,
@@ -62,15 +28,15 @@ export function makeResourcesStyles(colors: any) {
       padding: 14,
       borderWidth: 1,
       borderColor: colors.border,
-      gap: 8,
+      gap: 10,
     },
-    cardTop: {
+    topRow: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
       gap: 10,
     },
-    cardTitle: {
+    titleText: {
       color: colors.text,
       fontSize: 16,
       fontWeight: "900",
@@ -85,19 +51,25 @@ export function makeResourcesStyles(colors: any) {
       backgroundColor: colors.card,
     },
     badgeText: {
+      fontSize: 12,
+      fontWeight: "900",
+    },
+    metaRow: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 8,
+      alignItems: "center",
+    },
+    metaText: {
       color: colors.muted,
       fontSize: 12,
       fontWeight: "800",
     },
-    cardDesc: {
-      color: colors.muted,
-      fontSize: 13,
-      lineHeight: 18,
-    },
     tagsRow: {
       flexDirection: "row",
-      gap: 8,
       flexWrap: "wrap",
+      gap: 8,
+      marginTop: 2,
     },
     tag: {
       paddingHorizontal: 10,
@@ -108,20 +80,7 @@ export function makeResourcesStyles(colors: any) {
       backgroundColor: colors.card,
     },
     tagText: {
-      color: colors.text,
       fontSize: 12,
-      fontWeight: "800",
-    },
-    resetBtn: {
-      paddingVertical: 12,
-      borderRadius: 14,
-      alignItems: "center",
-      borderWidth: 1,
-      borderColor: colors.border,
-      backgroundColor: colors.card,
-    },
-    resetText: {
-      color: colors.text,
       fontWeight: "900",
     },
     empty: {

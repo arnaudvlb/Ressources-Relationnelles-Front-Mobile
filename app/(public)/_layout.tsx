@@ -46,6 +46,18 @@ export default function PublicTabsLayout() {
                 href: null, // cache complètement l’onglet
             }}
             />
+
+              <Tabs.Screen
+        name="ressources/index"
+        options={{
+          title: "Ressources",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="book" size={size ?? 28} color={color} />
+          ),
+        }}
+/>
     </Tabs>
+
+    
   );
 }
