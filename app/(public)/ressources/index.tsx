@@ -4,7 +4,7 @@ import { getRessourceStats } from "@/services/ressourcesStatsStorage";
 import { makeResourcesListStyles } from "@/styles/ressourcesListStyles";
 import type { Ressource } from "@/types/ressources";
 import React, { useEffect, useState } from "react";
-import { Alert, FlatList, Pressable, Text, View } from "react-native";
+import { FlatList, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // ✅ LOCAL : on récupère les ressources depuis les mocks
@@ -81,7 +81,6 @@ export default function RessourcesList() {
     return (
       <Pressable 
         onPress={() => {
-        Alert.alert("OK", `item.id_ressource`);
         router.push({
           pathname: "/(public)/ressources/[id]",
           params: { id: String(item.id_ressource) },
