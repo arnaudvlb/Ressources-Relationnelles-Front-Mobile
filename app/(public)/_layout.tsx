@@ -56,6 +56,13 @@ export default function PublicTabsLayout() {
           ),
         }}
 />
+
+    <Tabs.Screen
+        name="ressources/[id]"
+        options={{
+          href: null,
+        }}
+    />
     </Tabs>
 
     

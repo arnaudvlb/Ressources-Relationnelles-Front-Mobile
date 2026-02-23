@@ -6,6 +6,7 @@ type RessourceStats={
     liked : boolean; 
     likesCount : number;
     favorite:boolean;
+    favoriteCount : number;
 };
 
 //Dico des stat

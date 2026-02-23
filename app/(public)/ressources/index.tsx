@@ -1,13 +1,15 @@
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { getRessourceStats } from "@/services/ressourcesStatsStorage";
 import { makeResourcesListStyles } from "@/styles/ressourcesListStyles";
 import type { Ressource } from "@/types/ressources";
 import React, { useEffect, useState } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { Alert, FlatList, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // ✅ LOCAL : on récupère les ressources depuis les mocks
 import { listRessources } from "@/data/mockRessources";
+import { router } from "expo-router";
 
 /* ===========================
    💤 API (DÉSACTIVÉ)
@@ -26,6 +28,7 @@ export default function RessourcesList() {
   const styles = makeResourcesListStyles(colors);
 
   const [ressources, setRessources] = useState<Ressource[]>([]);
+  const [statsMap, setStatsMap] = useState<Record<string, { views: number; likesCount: number }>>({});
 
   /* ===========================
      ✅ LOCAL (ACTIF)
@@ -34,6 +37,17 @@ export default function RessourcesList() {
   useEffect(() => {
     const data = listRessources();
     setRessources(data);
+
+    (async()=>{
+      const entries=await Promise.all(
+        data.map(async(r)=>{
+          const stats=await getRessourceStats(r.id_ressource);
+          return [String(r.id_ressource),stats] as const;
+        })
+      );
+      const map = Object.fromEntries(entries);
+      setStatsMap(map);
+    })();
   }, []);
 
   /* ===========================
@@ -60,9 +74,22 @@ export default function RessourcesList() {
 
   function renderItem({ item }: { item: Ressource }) {
     const dateText = item.date_creation ? String(item.date_creation).slice(0, 10) : "-";
+    const stats= statsMap[String(item.id_ressource)];
+    const views = stats?.views ?? 0;
+    const likes = stats?.likesCount ??0;
 
     return (
-      <Pressable onPress={() => {}} style={styles.card}>
+      <Pressable 
+        onPress={() => {
+        Alert.alert("OK", `item.id_ressource`);
+        router.push({
+          pathname: "/(public)/ressources/[id]",
+          params: { id: String(item.id_ressource) },
+        });
+      }}
+        style={styles.card}>
+
+          
         <View style={styles.topRow}>
           <Text style={styles.titleText}>{item.titre}</Text>
 
@@ -84,8 +111,8 @@ export default function RessourcesList() {
               </Text>
             </View>
           ) : null}
-
-          <Text style={styles.metaText}>❤️ {item.adore_count}</Text>
+          <Text style={styles.metaText}>👁 {views}</Text>
+          <Text style={styles.metaText}>❤️ {likes}</Text>
         </View>
 
         <View style={styles.tagsRow}>
