@@ -21,13 +21,13 @@ export default function RegisterAction({styles, handleAction,loading, buttonPrim
               {loading ? (
                 <ActivityIndicator />
               ) : (
-                <Text style={styles.buttonPrimaryText}>{buttonPrimaryText}Créer mon compte</Text>
+                <Text style={styles.buttonPrimaryText}>{buttonPrimaryText}</Text>
               )}
             </Pressable>
 
             {/* Lien retour */}
             <Pressable onPress={() => router.push("/login")} disabled={loading}>
-              <Text style={styles.link}>{linkText}J’ai déjà un compte</Text>
+              <Text style={styles.link}>{linkText}</Text>
             </Pressable>
         </>
     )

@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Alert, View } from "react-native";
 import RegisterAction from "./RegisterAction";
 import { RegisterAvatar } from "./RegisterAvatar";
+import RegisterFields from "./RegisterFields";
 import RegisterHeader from "./RegisterHeader";
 
 
@@ -158,8 +159,8 @@ export default function RegisterForm({styles,colors}:Props){
          </RegisterHeader>
          
           <View style={styles.card}>
-              <RegisterForm
-               styles={styles}
+              <RegisterFields
+              styles={styles}
               sectionTitle="Infos du Compte"
               email={email} 
               setEmail={setEmail}
@@ -177,7 +178,7 @@ export default function RegisterForm({styles,colors}:Props){
               setPhone={setPhone}
               >
 
-              </RegisterForm>
+              </RegisterFields>
               
               <RegisterAvatar
               styles={styles}
