@@ -31,7 +31,7 @@ export default function Register(){
     const [phone, setPhone]=useState("");
     const[name,setName]=useState("");
     const [firstname,setFirstName]=useState("");
-     const [pseudo,setPseudo]=useState("");
+    const [pseudo,setPseudo]=useState("");
 
     const[loading,setLoading]=useState(false);
 
