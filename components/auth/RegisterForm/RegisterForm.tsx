@@ -1,36 +1,36 @@
 
-import RegisterForm from "@/components/auth/RegisterForm/RegisterForm";
-import { Colors } from "@/constants/theme";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import { saveAccessToken } from "@/services/authStorage";
 import { saveCurrentUser } from "@/services/userStorage";
-import { makeRegisterStyles } from "@/styles/registerStyles";
 import { User } from "@/types/users";
+import { isEmailValid, isPasswordValid } from "@/utils/validators";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Alert, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Alert, View } from "react-native";
+import RegisterAction from "./RegisterAction";
+import { RegisterAvatar } from "./RegisterAvatar";
+import RegisterHeader from "./RegisterHeader";
+
+
+type Props={
+    styles:any,
+    colors:any,
+}
 
 
 
 
-export default function Register(){
+export default function RegisterForm({styles,colors}:Props){
 
-    //Recuperation du theme 
-    const scheme = useColorScheme()??"dark";
-    const colors=Colors[scheme];
-    const styles = makeRegisterStyles(colors);
 
     //Definition des states
     const [email,setEmail]=useState("");
     const [password,setPassword]=useState("");
     const [confirm,setConfirm]=useState("");
-    const [username, setUsername]=useState("");
+    const [firstname, setFirstname]=useState("");
     const [avatar, setAvatar] = useState<string | null>(null);
     const [phone, setPhone]=useState("");
     const[name,setName]=useState("");
-    const [firstname,setFirstName]=useState("");
     const [pseudo,setPseudo]=useState("");
 
     const[loading,setLoading]=useState(false);
@@ -39,8 +39,6 @@ export default function Register(){
     function wait(ms:number){
         return new Promise((resolve)=>setTimeout(resolve,ms));
     }
-
-
 
     //Fonction pour recuperer une image dans la galerie 
     async function pickAvatar() {
@@ -62,21 +60,27 @@ export default function Register(){
         if(!result.canceled){
             setAvatar(result.assets[0].uri);
         }
-        
-
-        
-    }
-
-    //Test valider de l'email
-    function isEmailValid(value : string){
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
-    }
+      }
 
 
      //Fonction quand l'utilisateur clique pour cree sont compte 
     async function handleRegister() {
+
+      //Nettoyage des variable 
+
+      const cleanEmail = email.trim();
+      const cleanPhone=phone.trim();
+      const cleanPassword = password.trim();
+      const cleanConfirm = confirm.trim();
+      const cleanFirstname= firstname.trim();
+      const cleanName= name.trim();
+      const cleanPseudo=pseudo.trim();
+     
+      
+
+
         //Verification de champs obligatoire 
-        if(!email.trim()||!username.trim()||!password.trim() ||!confirm.trim()){
+        if(!cleanEmail||!cleanPseudo.trim()||!cleanPassword ||!cleanConfirm){
             Alert.alert("Oups", "Email, pseudo et mots de passe sont obligatoires.");
             return ;
         }
@@ -89,12 +93,12 @@ export default function Register(){
         }
 
         //Verification taille mdp 
-        if(password.length<6){
+        if(!isPasswordValid(cleanPassword)){
             Alert.alert("Oups", "Le mot de passe doit faire au moins 6 caractères.");
             return;
         }
 
-        if (!isEmailValid(email.trim())){
+        if (!isEmailValid(cleanEmail)){
             Alert.alert("Oups", "Le format de l'email n'est pas valide.");
             return;
         }
@@ -118,11 +122,11 @@ export default function Register(){
 
             const user : User={
                 id_utilisateur: fakeUserId,
-                nom: name.trim(),
-                prenom: username.trim(),
-                telephone: phone.trim() ? phone.trim() : null,
-                email: email.trim(),
-                pseudo: pseudo.trim(),
+                nom: cleanName,
+                prenom: cleanFirstname,
+                telephone: cleanPhone? cleanPhone : null,
+                email: cleanEmail,
+                pseudo: cleanPseudo,
                 photo_profil: avatar,
                 statut_compte: "ACTIF",
                 date_creation: createadAt,
@@ -145,30 +149,65 @@ export default function Register(){
     
     //Interface utilisateur 
     return (
-       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      {/* KeyboardAvoidingView pour pousser le contenu quand le clavier apparaît */}
-      <KeyboardAvoidingView
-        style={styles.screen}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        {/* ScrollView pour permettre de scroller sur petit écran */}
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-        >
-          <RegisterForm
-          styles={styles}
-          colors={colors}
-          
-          >
+       <>
+          <RegisterHeader
+            styles={styles}
+            title="Inscription"
+            subtitle="Crée ton compte. Pour l’instant c’est simulé, mais l’écran est prêt pour brancher l’API."
+            >
+         </RegisterHeader>
+         
+          <View style={styles.card}>
+              <RegisterForm
+               styles={styles}
+              sectionTitle="Infos du Compte"
+              email={email} 
+              setEmail={setEmail}
+              pseudo={pseudo}
+              setPseudo={setPseudo}
+              password={password}
+              setPassword={setPassword}
+              confirm ={confirm}
+              setConfirm={setConfirm}
+              firstname={firstname}
+              setFirstname={setFirstname}
+              name={name}
+              setName={setName}
+              phone={phone}
+              setPhone={setPhone}
+              >
+
+              </RegisterForm>
+              
+              <RegisterAvatar
+              styles={styles}
+              colors={colors}
+              sectionTitle="Photo de profil"
+              avatar={avatar}
+              handleAction={setAvatar}
+              loading={loading}
+              
+              >
 
 
-          </RegisterForm>
-          
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-  );
-    
+              </RegisterAvatar>
+              
+              <RegisterAction
+              styles={styles}
+              handleAction={handleRegister}
+              loading={loading}
+              buttonPrimaryText="Créer mon compte"
+              linkText="J’ai déjà un compte"
+              >
+
+
+              </RegisterAction>
+              
+
+          </View>
+
+       </>
+       
+  )
 
 }
