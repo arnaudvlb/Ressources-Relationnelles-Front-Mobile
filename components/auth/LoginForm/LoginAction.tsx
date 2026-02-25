@@ -1,6 +1,6 @@
 import { router } from "expo-router"
-import { ActivityIndicator, Pressable, Text } from "react-native"
-import { View } from "react-native-reanimated/lib/typescript/Animated"
+import { ActivityIndicator, Pressable, Text, View } from "react-native"
+
 
 
 type Props={

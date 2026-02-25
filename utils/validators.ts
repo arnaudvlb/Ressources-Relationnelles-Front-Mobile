@@ -5,7 +5,7 @@ export function isEmailValid(value: string): boolean {
 
 export function isPasswordValid(value:string):boolean{
 
-    return value.length<8;
+    return value.length>=8;
 }
 
 

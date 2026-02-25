@@ -44,5 +44,45 @@ export function makeLoginStyles(colors: any) {
       fontWeight: "800",
       color: colors.primary,
     },
+
+  header: { 
+    gap: 6,
+    marginBottom: 12 
+  },
+
+  actions: { 
+    gap: 10, 
+    marginTop: 10 
+  },
+
+  helper: { 
+    fontSize: 12, 
+    opacity: 0.7, 
+    color:colors.text
+  },
+
+  errorBox: { 
+    padding: 12, 
+    borderRadius: 12, 
+    borderWidth: 1, 
+    marginBottom: 10,
+    backgroundColor:"#FFFF", 
+    borderColor:"#ff0000", 
+  },
+  errorText: { 
+    fontSize: 13, 
+    
+  },
+successBox: {  
+  padding: 12, 
+  borderRadius: 12, 
+  borderWidth: 1, 
+  marginBottom: 10,
+  backgroundColor:"#FFFF" ,
+  borderColor:"#00ff51" ,
+ },
+successText: {
+   fontSize: 13 
+  }
   });
 }

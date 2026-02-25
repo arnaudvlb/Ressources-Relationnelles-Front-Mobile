@@ -159,10 +159,7 @@ export default function Register(){
           <RegisterForm
           styles={styles}
           colors={colors}
-          
           >
-
-
           </RegisterForm>
           
         </ScrollView>

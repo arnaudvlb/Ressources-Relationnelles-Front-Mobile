@@ -1,3 +1,4 @@
+import { apiLogin } from "@/services/authApi";
 import { saveAccessToken } from "@/services/authStorage";
 import { saveCurrentUser } from "@/services/userStorage";
 import { isEmailValid, isPasswordValid } from "@/utils/validators";
@@ -54,20 +55,11 @@ export default function LoginForm({ styles }: Props) {
 
 
     try {
-      // Démo : remplaçable par l'API
-      const result = await mockLogin(cleanEmail, cleanPassword);
-
-      if (!result.ok) {
-        setMessage(result.message);
-        setLoading(false);
-        return;
-      }
+      const result = await apiLogin({email:cleanEmail, password:cleanPassword});
 
       // Stockage local
-      await saveAccessToken(result.token);
+      await saveAccessToken(result.accessToken);
       await saveCurrentUser(result.user);
-
-      setLoading(false);
 
       // Message succès 
       setMessage("Connexion OK ✅");
@@ -75,8 +67,10 @@ export default function LoginForm({ styles }: Props) {
       // Redirection
       router.replace("/(tabs)");
     } catch (e: any) {
+      
+      setMessage(e?.message ?? "Impossible de se connecter.");
+    }finally{
       setLoading(false);
-      setMessage(e?.message ?? "Erreur inconnue.");
     }
   }, [email, password]);
 
