@@ -20,15 +20,16 @@ export async function apiListRessources(): Promise<Ressource[]> {
     auth: false,
   });
 
- return data.member.map(mapRessourceAPItoRessource)
+const mapped = data.member.map(mapRessourceAPItoRessource);
+return mapped;
 }
 
 
-export async function apiGetRessource(id:number):Promise<Ressource> {
-    return httpRequest<Ressource>({
-        method:"GET",
-        path:`/ressources/${id}`,
-        auth:false,
-    })
-    
+export async function apiGetRessource(id: number): Promise<Ressource> {
+  const data = await httpRequest<RessourceAPI>({
+    method: "GET",
+    path: `/ressources/${id}`,
+    auth: false,
+  });
+  return mapRessourceAPItoRessource(data);
 }

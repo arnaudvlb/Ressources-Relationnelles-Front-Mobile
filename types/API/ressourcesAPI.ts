@@ -10,13 +10,13 @@ export type RessourceAPI = {
   dateCreation: string;     
   estVisible: boolean;
 
-  visibilite: "public" | "amis" | "privé";
+  visibilite: string;
 
   utilisateur: UserAPI;     
-  medias: string[];         
-  tagsRessources: string[]; 
-  categories: string[];     
-  commentaires: string[];   
+  medias:unknown[];         
+  tagsRessources: unknown[]; 
+  categories: unknown[];     
+  commentaires: unknown[];   
 };
   
   

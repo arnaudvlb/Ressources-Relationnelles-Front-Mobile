@@ -39,9 +39,11 @@ useEffect(() => {
       setRessources(list);
 
       const map: Record<string, { views: number; likesCount: number }> = {};
-      list.forEach((r: any) => {
-        map[String(r.id)] = { views: r.views ?? 0, likesCount: r.likesCount ?? 0 };
-      });
+      list.forEach((r) => {
+      map[String(r.id_ressource)] = { views: r.viewsCount ?? 0, likesCount: r.likeCount ?? 0 };
+       });
+
+       
       setStatsMap(map);
     } catch (e: any) {
       setError(e?.message ?? "Impossible de charger les ressources.");

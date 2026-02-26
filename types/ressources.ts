@@ -12,7 +12,7 @@ export type Ressource = {
   active: boolean,
   date_creation: string,
   date_modification: string,
-  visibilite: "public" | "amis" | "privé",
+  visibilite: string,
   auteur: User,
   categorie: Categorie |null,
   tags: Tag[]|null,
