@@ -14,14 +14,20 @@ export type ListRessourcesResponseAPI = {
 
 //Get ressources
 export async function apiListRessources(): Promise<Ressource[]> {
-    const data = await httpRequest<ListRessourcesResponseAPI>({
+  const data = await httpRequest<any>({
     method: "GET",
     path: "/ressources",
     auth: false,
   });
 
-const mapped = data.member.map(mapRessourceAPItoRessource);
-return mapped;
+  // support: { member: [...] } OR { "hydra:member": [...] } OR [...]
+  const items =
+    Array.isArray(data) ? data :
+    Array.isArray(data.member) ? data.member :
+    Array.isArray(data["hydra:member"]) ? data["hydra:member"] :
+    [];
+
+  return items.map(mapRessourceAPItoRessource);
 }
 
 
