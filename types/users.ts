@@ -1,22 +1,22 @@
 import { Role } from "./roles";
 
 export type User= {
-   id_utilisateur: number;
+  id_utilisateur: number,
 
-  nom: string;
-  prenom: string;
+  nom: string|null,
+  prenom: string|null,
 
-  telephone: string | null;
+  telephone: string | null,
 
-  email: string;
+  email: string,
 
-  pseudo: string;
+  pseudo: string,
 
-  photo_profil: string | null;
+  photo_profil: string | null,
 
-  statut_compte: "ACTIF" | "DESACTIVE" | "BLOQUE";
+  statut_compte: boolean,
 
-  date_creation: string;
+  date_creation: string,
 
-  role: Role;
+  role: Role,
 }

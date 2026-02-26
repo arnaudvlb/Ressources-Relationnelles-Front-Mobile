@@ -1,24 +1,34 @@
+import mapRessourceAPItoRessource from "@/mappers/ressourceMapper";
+import { RessourceAPI } from "@/types/API/ressourcesAPI";
 import { Ressource } from "@/types/ressources";
+import { httpRequest } from "./httpClient";
 
 
-const BASE_URL="http://192.168.1.12/api/"
+export type ListRessourcesResponseAPI = {
+  member: RessourceAPI[];
+  totalItems?: number;
+  "@context"?: string;
+  "@id"?: string;
+  "@type"?: string;
+};
 
-//Recuperation des ressources
-export async function fetchRessources():Promise<Ressource[]> {
-    const res = await fetch(`${BASE_URL}/ressources`,{
+//Get ressources
+export async function apiListRessources(): Promise<Ressource[]> {
+    const data = await httpRequest<ListRessourcesResponseAPI>({
+    method: "GET",
+    path: "/ressources",
+    auth: false,
+  });
+
+ return data.member.map(mapRessourceAPItoRessource)
+}
+
+
+export async function apiGetRessource(id:number):Promise<Ressource> {
+    return httpRequest<Ressource>({
         method:"GET",
-        headers:{
-            "Content-Type": "application/json",
-        }
-    });
-
-    //erreur
-    if (!res.ok){
-        const text= await res.text;
-        throw new Error(`Erreur API (${res.status}) : ${text}`);
-    }    
-
-    const data=(await res.json()) as Ressource[]
-
-    return data
+        path:`/ressources/${id}`,
+        auth:false,
+    })
+    
 }

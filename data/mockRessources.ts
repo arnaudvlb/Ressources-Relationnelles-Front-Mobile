@@ -15,7 +15,7 @@ export const MOCK_RESSOURCES: Ressource[] = [
     active: true,
     date_creation: "2026-02-01",
     date_modification: "2026-02-03",
-    visibilite: "PUBLIC",
+    visibilite: "public",
     type: TYPES[0],
     auteur: USERS[0],
     categorie: CATEGORIES[0],

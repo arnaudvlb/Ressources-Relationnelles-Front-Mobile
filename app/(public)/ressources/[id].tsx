@@ -1,3 +1,7 @@
+import RessourceEmpty from "@/components/ressources/ressourcesDetails/RessourceEmpty";
+import RessourceHeader from "@/components/ressources/ressourcesDetails/RessourceHeader";
+import RessourceMedia from "@/components/ressources/ressourcesDetails/RessourceMedia";
+import RessourceStats from "@/components/ressources/ressourcesDetails/RessourceStats";
 import { Colors } from "@/constants/theme";
 import { listRessources } from "@/data/mockRessources";
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -6,7 +10,7 @@ import { makeRessourceDetailStyles } from "@/styles/ressourceDetailStyles";
 import { Text } from "@react-navigation/elements";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Image, Linking, Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
@@ -73,25 +77,23 @@ export default function RessourceDetail(){
     }
 
     //si le media est une image
-    function isImage(url:string){
-        return /\.(png|jpg|jpeg|webp)$/i.test(url);
-    }
+   
 
 
-    function isPDF(url:string){
-        return /\.pdf$/i.test(url);
-    }
+    
 
     //Si la ressources n'a pas ete trouve
     if(!ressource){
         return(
             <SafeAreaView style = {styles.screen}>
-                <Text style={styles.title}>Ressource Introuvable</Text>
-                <Text style={styles.empty}>Impossible de trouver la ressource #{String(params.id)}</Text>
+               <RessourceEmpty
+               styles={styles}
+               title="Ressource Introuvable"
+               empty={`Impossible de trouver la ressource #${String(params.id)}`}
+               buttonText="Retour"
+               >
 
-                <Pressable onPress={()=> router.back()} style={styles.button}>
-                    <Text style={styles.buttonText}>Retour</Text>
-                </Pressable>
+               </RessourceEmpty>
             </SafeAreaView>
         )
     }
@@ -103,97 +105,38 @@ export default function RessourceDetail(){
     return (
         <SafeAreaView style={styles.screen}>
             <ScrollView contentContainerStyle={{gap : 12,paddingBottom:24}}>
-                <View style={styles.headerRow}>
-                    <Text style={styles.title}>{ressource.titre}</Text>
+                <RessourceHeader
+                styles={styles}
+                ressource={ressource}
+                >
+                </RessourceHeader>
 
-                    <View style={styles.badge}>
-                        <Text style={[styles.badgeText,{color :ressource.type.couleur}]}>{ressource.type.libelle}</Text>
-                    </View>
-                </View>
+               <RessourceStats
+               styles={styles}
+               ressource={ressource}
+               views={views}
+               likeCount={likeCount}
+               datetext={datetext}
+               handleActionFavoris={handleToggleFavoris}
+               handleActionLike={handleToggleLike}
+               favoris={favoris}
+               liked={liked}
+               >
 
-                <View style={styles.card}>
-                    <View style={styles.metaRow}>
-                        <Text style={styles.metaText}>Par {ressource.auteur.pseudo}</Text>
-                        <Text style={styles.metaText}>{datetext}</Text>
 
-                        {ressource.categorie ? (
-                            <View style={styles.badge}>
-                                <Text style={[styles.badgeText,{color : ressource.categorie.couleur}]}>{ressource.categorie.libelle}</Text>
-                            </View>
-                        ): null}
+               </RessourceStats>
 
-                        <Text style={styles.metaText}>👁{views}</Text>
-                        <Text style={styles.metaText}>❤️{likeCount}</Text>
+                <RessourceMedia
+                styles={styles}
+                colors={colors}
+                medias={medias}
+                >
 
-                        <Text style={styles.content}>{ressource.contenu}</Text>
-
-                        <Pressable onPress= {handleToggleLike} style={styles.button}>
-                            <Text style={styles.buttonText}>
-                                {liked ? "🤍 Retirer l'adoration":"❤️ Adorer"}
-                            </Text>
-                        </Pressable>
-                        <Pressable onPress = {handleToggleFavoris} style={styles.button}>
-                            <Text style={styles.buttonText}>
-                                {favoris ? "🔖 Enlever Favoris":"🔖 Favoris" }
-                            </Text>
-                        </Pressable>
-                    </View>
-
-                    <View style={styles.card}>
-                        <Text style={styles.metaText}>Médias</Text>
-                        {medias.taille === 0 ?(
-                            <Text style={styles.empty}>Aucun média pour cette ressource</Text>
-                        ):(
-                            <View style={{gap:12}}>
-                                {medias.map((m:any)=>{
-                                    
-                                    const url = String(m.chemin_fichier ??"");
-                                    const name=String(m.nom_fichier ??"Fichier");
-
-                                    if (url && isImage(url)){
-                                        return(
-                                            <View key={String(m.id_media)} style={{gap:8}}>
-                                                <Text style={styles.metaText}>{name}</Text>
-                                              <Image
-                                                source={{ uri: url }}
-                                                style={{ width: "100%", height: 220, borderRadius: 18 }}
-                                                resizeMode="cover"
-                                            />
-
-                                            </View>
-                                        );
-                                    }
-                                    if(url){
-                                        return(
-                                            <View key={String(m.id_media)} style ={{gap:8}}>
-                                                <Text style={styles.metaText}>{name}</Text>
-                                                <Pressable 
-                                                    onPress={()=>Linking.openURL(url)}
-                                                    style={[styles.button,{backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }]}>
-                                                    
-                                                    <Text style={[styles.buttonText,{color:colors.text}]}>
-                                                        {isPDF(url)?"Ouvrir le PDF" : "Ouvrir le lien"}
-                                                    </Text>
-                                                </Pressable>
-                                            </View>
-                                        )
-                                    }
-                                    return(
-                                        <Text key={String(m.id_media)} style={styles.empty}>
-                                            Média Invalide
-                                        </Text>
-                                    );
-                                })}
-                            </View>
-                        )}
-                    </View>
+                </RessourceMedia>
 
                     <Pressable onPress={()=> router.back()} style={styles.button}>
                         <Text style={styles.buttonText}>Retour à la liste</Text>
                     </Pressable>
-                    
-                    
-                </View>
 
             </ScrollView>
         </SafeAreaView>

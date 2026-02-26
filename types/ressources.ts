@@ -1,23 +1,29 @@
 import { Categorie } from "./categories";
+import { Commentaire } from "./commentaires";
 import { Media } from "./medias";
 import { Tag } from "./tags";
-import { Type } from "./types";
 import { User } from "./users";
 
 export type Ressource = {
-  id_ressource: number;
-  titre: string;
-  contenu: string;
-  valide: boolean;
-  active: boolean;
-  date_creation: string;
-  date_modification: string;
-  visibilite: "PUBLIC" | "PRIVE";
-  type: Type;
-  auteur: User;
-  categorie: Categorie ;
-  tags: Tag[];
-  medias: Media[];
-  adore_count: number;
-  is_favorite: boolean;
+  id_ressource: number,
+  titre: string,
+  contenu: string,
+  valide: boolean,
+  active: boolean,
+  date_creation: string,
+  date_modification: string,
+  visibilite: "public" | "amis" | "privé",
+  auteur: User,
+  categorie: Categorie |null,
+  tags: Tag[]|null,
+  medias: Media[]|null,
+  commentaire:Commentaire[]|null,
+
+
+  likeCount: number,
+  isLike : boolean,
+  viewsCount:number,
+  is_favorite: boolean,
+
+
 };
