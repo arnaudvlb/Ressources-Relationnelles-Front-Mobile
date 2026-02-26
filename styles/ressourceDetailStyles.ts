@@ -90,5 +90,46 @@ export function makeRessourceDetailStyles(colors: any) {
       fontWeight: "900",
       fontSize: 16,
     },
+
+    actionsRow: {
+  flexDirection: "row",
+  gap: 12,
+  marginTop: 6,
+},
+
+actionBtn: {
+  flex: 1,
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 8,
+  paddingVertical: 12,
+  borderRadius: 14,
+  backgroundColor: colors.card,
+},
+
+actionBtnActiveLike: {
+  backgroundColor: "rgba(239, 68, 68, 0.15)",
+},
+
+actionBtnActiveFav: {
+  backgroundColor: "rgba(234, 179, 8, 0.15)",
+},
+
+actionText: {
+  fontSize: 14,
+  fontWeight: "800",
+  color: colors.text,
+},
+
+actionTextActiveLike: {
+  color: "#ef4444",
+},
+
+actionTextActiveFav: {
+  color: "#eab308",
+},
   });
+
+  
 }

@@ -11,7 +11,7 @@ type Props = {
   colors: any;
 };
 
-export function RessourceCard({ styles, item, statsMap, loading, error, colors }: Props) {
+export function RessourceCard({ styles, item, statsMap, loading, error, colors }: Readonly<Props>) {
   const dateText = item.date_creation ? String(item.date_creation).slice(0, 10) : "-";
 
   const stats = statsMap?.[String(item.id_ressource)];
@@ -70,9 +70,12 @@ export function RessourceCard({ styles, item, statsMap, loading, error, colors }
         <Text style={styles.metaText}>❤️ {likes}</Text>
       </View>
 
-      <View style={styles.tagsRow}>
-        {tags.map((t) => (
-          <View key={t.id_tag} style={styles.tag}>
+     <View style={styles.tagsRow}>
+        {(tags ?? []).map((t, idx) => (
+          <View
+            key={t?.id_tag != null ? String(t.id_tag) : `tag-${item.id_ressource}-${idx}`}
+            style={styles.tag}
+          >
             <Text style={[styles.tagText, { color: t.couleur }]}>#{t.libelle}</Text>
           </View>
         ))}

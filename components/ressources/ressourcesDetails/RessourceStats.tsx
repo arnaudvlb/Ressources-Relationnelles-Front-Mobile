@@ -28,22 +28,49 @@ export default function RessourceStats({styles,ressource,views,likeCount,datetex
                     </View>
                     ): null}
         
-                <Text style={styles.metaText}>👁{views}</Text>
-                <Text style={styles.metaText}>❤️{likeCount}</Text>
         
                 <Text style={styles.content}>{ressource.contenu}</Text>
         
-                <Pressable onPress= {handleActionLike} style={styles.button}>
-                    <Text style={styles.buttonText}>
-                        {liked ? "🤍":"❤️"}
-                     </Text>
-                </Pressable>
+                <View style={styles.actionsRow}>
+
+                {/* LIKE */}
+                <Pressable
                 
-                <Pressable onPress = {handleActionFavoris} style={styles.button}>
-                    <Text style={styles.buttonText}>
-                        {favoris ? "☆":"⭐" }
+                    onPress={handleActionLike}
+                    style={[
+                    styles.actionBtn,
+                    liked && styles.actionBtnActiveLike
+                    ]}
+                >
+                    <Text
+                    style={[
+                        styles.actionText,
+                        liked && styles.actionTextActiveLike
+                    ]}
+                    >
+                    ❤️ {likeCount}
                     </Text>
                 </Pressable>
+
+                {/* FAVORIS */}
+                <Pressable
+                    onPress={handleActionFavoris}
+                    style={[
+                    styles.actionBtn,
+                    favoris && styles.actionBtnActiveFav
+                    ]}
+                >
+                    <Text
+                    style={[
+                        styles.actionText,
+                        favoris && styles.actionTextActiveFav
+                    ]}
+                    >
+                    ⭐ 
+                    </Text>
+                </Pressable>
+
+</View>
                 </View>
             </View>
         

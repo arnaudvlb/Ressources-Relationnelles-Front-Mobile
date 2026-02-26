@@ -21,15 +21,12 @@ export async function apiListRessources(): Promise<Ressource[]> {
   });
 
   // support: { member: [...] } OR { "hydra:member": [...] } OR [...]
-  const items =
-    Array.isArray(data) ? data :
-    Array.isArray(data.member) ? data.member :
-    Array.isArray(data["hydra:member"]) ? data["hydra:member"] :
-    [];
+  const mapped = await Promise.all(
+    data.map(mapRessourceAPItoRessource)
+  );
 
-  return items.map(mapRessourceAPItoRessource);
+  return mapped
 }
-
 
 export async function apiGetRessource(id: number): Promise<Ressource> {
   const data = await httpRequest<RessourceAPI>({
@@ -37,5 +34,6 @@ export async function apiGetRessource(id: number): Promise<Ressource> {
     path: `/ressources/${id}`,
     auth: false,
   });
-  return mapRessourceAPItoRessource(data);
+
+  return await mapRessourceAPItoRessource(data);
 }

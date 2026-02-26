@@ -40,16 +40,6 @@ export async function getResourceStats(id: number): Promise<RessourceStats> {
 }
 
 
-
-//ecrire les stats
-export async function getRessourceStats(id:number) : Promise<RessourceStats>{
-
-    const map=await readAll();
-    const key= String(id);
-    return map[key]?? { views: 0, favorite: false, likesCount: 0, liked: false };
-    
-}
-
 export async function incrementRessourceViews(id:number) : Promise<RessourceStats>{
 
     const map = await readAll();
