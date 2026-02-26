@@ -1,10 +1,10 @@
 
 import RegisterForm from "@/components/auth/RegisterForm/RegisterForm";
+import { makeRegisterStyles } from "@/components/auth/RegisterForm/module.RegisterStyles";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { saveAccessToken } from "@/services/authStorage";
 import { saveCurrentUser } from "@/services/userStorage";
-import { makeRegisterStyles } from "@/styles/registerStyles";
 import { User } from "@/types/users";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
@@ -124,7 +124,7 @@ export default function Register(){
                 email: email.trim(),
                 pseudo: pseudo.trim(),
                 photo_profil: avatar,
-                statut_compte: "ACTIF",
+                statut_compte: true,
                 date_creation: createadAt,
                 role: "ROLE_USER",
             }

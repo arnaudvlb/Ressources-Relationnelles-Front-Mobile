@@ -1,14 +1,13 @@
 import { AppInput } from "@/components/AppInput";
 
 type Props = {
-  styles:any,
   email: string,
   password: string,
   setEmail: (text: string) => void,
   setPassword: (text: string) => void,
 };
 
-export function LoginFields({ styles,email, password, setEmail, setPassword }: Props) {
+export function LoginFields({ email, password, setEmail, setPassword }: Readonly<Props>) {
   return (
     <>
       <AppInput

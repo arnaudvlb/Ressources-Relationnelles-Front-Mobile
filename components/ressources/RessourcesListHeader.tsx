@@ -6,7 +6,7 @@ type Props={
     subtitle:string,
 }
 
-export default function RessourcesListHeader({styles,title,subtitle}: Props){
+export default function RessourcesListHeader({styles,title,subtitle}: Readonly<Props>){
     return(
         <>
         <Text style={styles.title}>{title}</Text>

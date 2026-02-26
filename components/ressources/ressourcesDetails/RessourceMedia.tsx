@@ -18,9 +18,9 @@ function isPDF(url:string){
     }
 
 
-export default function RessourceMedia({styles,colors,medias}:Props){
+export default function RessourceMedia({styles,colors,medias}:Readonly<Props>){
     return(
-        <>
+        
          <View style={styles.card}>
             <Text style={styles.metaText}>Médias</Text>
                 {medias.taille === 0 ?(
@@ -69,6 +69,6 @@ export default function RessourceMedia({styles,colors,medias}:Props){
                                     </View>
                                 )}
                             </View>
-        </>
+        
     )
 }

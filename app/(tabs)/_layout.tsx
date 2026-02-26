@@ -48,13 +48,6 @@ export default function MainTabsLayout() {
         }}
       />
 
-      {/* Cache la route admin/users (sous-dossier admin) */}
-      <Tabs.Screen
-        name="admin/users"
-        options={{
-          href: null,
-        }}
-      />
     </Tabs>
   );
 

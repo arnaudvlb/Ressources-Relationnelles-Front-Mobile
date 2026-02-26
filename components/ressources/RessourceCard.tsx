@@ -32,9 +32,9 @@ export function RessourceCard({ styles, item, statsMap, loading, error, colors }
 
   if (error) {
     return (
-      <>
+      
         <Text style={styles.empty}>{String(error)}</Text>
-      </>
+      
     );
   }
 

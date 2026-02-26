@@ -11,9 +11,9 @@ type Props={
     loading: boolean,
 }
 
-export default function LoginAction({styles,handleAction, buttonTextLogin, buttonTextAccount,loading}:Props){
+export default function LoginAction({styles,handleAction, buttonTextLogin, buttonTextAccount,loading}:Readonly<Props>){
     return (
-        <>
+        
         <View style={styles.actions}>
         <Pressable
           onPress={handleAction}
@@ -29,6 +29,6 @@ export default function LoginAction({styles,handleAction, buttonTextLogin, butto
           <Text style={styles.link}>{buttonTextAccount}</Text>
         </Pressable>
       </View>
-        </>
+        
     )
 }

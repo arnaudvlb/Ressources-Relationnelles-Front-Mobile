@@ -5,7 +5,7 @@ type Props ={
     message : string| null,
 }
 
-export function LoginMessage({styles,message}:Props){
+export function LoginMessage({styles,message}:Readonly<Props>){
 
     return (
         <>

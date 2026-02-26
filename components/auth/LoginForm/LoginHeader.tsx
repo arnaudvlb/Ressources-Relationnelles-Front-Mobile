@@ -7,7 +7,7 @@ type Props = {
     subtitle:string,
 }
 
-export default function LoginHeader({styles,title,subtitle}: Props){
+export default function LoginHeader({styles,title,subtitle}: Readonly<Props>){
 
     return(
         <View style={styles.card}>
