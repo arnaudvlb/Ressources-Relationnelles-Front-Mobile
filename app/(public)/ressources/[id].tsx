@@ -5,11 +5,6 @@ import RessourceStats from "@/components/ressources/ressourcesDetails/RessourceS
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { apiGetRessource } from "@/services/resourcesApi";
-import {
-    incrementRessourceViews,
-    toggleRessourcesFavorite,
-    toggleRessourcesLikes,
-} from "@/services/ressourcesStatsStorage";
 import { makeRessourceDetailStyles } from "@/styles/ressourceDetailStyles";
 import { Ressource } from "@/types/ressources";
 import { Text } from "@react-navigation/elements";
@@ -47,13 +42,6 @@ export default function RessourceDetail() {
 
         const r = await apiGetRessource(id);
         setRessource(r);
-
-        const next = await incrementRessourceViews(id);
-        setViews(next.views);
-        setLikeCount(next.likesCount);
-        setFavorisCount(next.favoriteCount);
-        setLiked(next.liked);
-        setFavoris(next.favorite);
       } catch (e: any) {
         setError(e?.message ?? "Impossible de charger la ressource.");
       } finally {
@@ -64,17 +52,17 @@ export default function RessourceDetail() {
     load();
   }, [id]);
 
-  async function handleToggleLike() {
-    const next = await toggleRessourcesLikes(id);
-    setLikeCount(next.likesCount);
-    setLiked(next.liked);
-  }
+  // async function handleToggleLike() {
+  //   const next = await toggleRessourcesLikes(id);
+  //   setLikeCount(next.likesCount);
+  //   setLiked(next.liked);
+  // }
 
-  async function handleToggleFavoris() {
-    const next = await toggleRessourcesFavorite(id);
-    setFavorisCount(next.favoriteCount);
-    setFavoris(next.favorite);
-  }
+  // async function handleToggleFavoris() {
+  //   const next = await toggleRessourcesFavorite(id);
+  //   setFavorisCount(next.favoriteCount);
+  //   setFavoris(next.favorite);
+  // }
 
   // ✅ Loading
   if (loading) {

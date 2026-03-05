@@ -1,10 +1,10 @@
 import { httpRequest } from "@/services/httpClient";
-import type { User } from "@/types/users";
 
 export type AuthResponse = {
-  accessToken: string;
-  refreshToken?: string;
-  user: User;
+  data: {
+    token:string;
+    //user: User;
+  }
 };
 
 export async function apiLogin(payload: { email: string; password: string }): Promise<AuthResponse> {

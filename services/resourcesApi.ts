@@ -20,7 +20,6 @@ export async function apiListRessources(): Promise<Ressource[]> {
     auth: false,
   });
 
-  // support: { member: [...] } OR { "hydra:member": [...] } OR [...]
   const mapped = await Promise.all(
     data.map(mapRessourceAPItoRessource)
   );
@@ -28,6 +27,8 @@ export async function apiListRessources(): Promise<Ressource[]> {
   return mapped
 }
 
+
+//Get une ressources
 export async function apiGetRessource(id: number): Promise<Ressource> {
   const data = await httpRequest<RessourceAPI>({
     method: "GET",

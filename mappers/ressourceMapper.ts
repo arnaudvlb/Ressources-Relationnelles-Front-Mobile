@@ -3,7 +3,6 @@ import { AdorerAPI } from "@/types/API/adorersAPI";
 import { FavorisAPI } from "@/types/API/favorisAPI";
 import { RessourceAPI } from "@/types/API/ressourcesAPI";
 import { Ressource } from "@/types/ressources";
-import mapCategorieAPItoCategorie from "./categorieMapper";
 import mapUserAPItoUser from "./userMapper";
 
 
@@ -30,7 +29,7 @@ export default async function mapRessourceAPItoRessource(d: RessourceAPI): Promi
         date_modification: "",
         visibilite: d.visibilite,
         auteur: mapUserAPItoUser(d.utilisateur),
-        categorie:mapCategorieAPItoCategorie(d.categories),
+        categorie:d.categories,
         tags: null,
         medias: null,
         commentaire:null,

@@ -31,7 +31,7 @@ export default function RegisterForm({styles,colors}:Props){
     const [firstname, setFirstname]=useState("");
     const [avatar, setAvatar] = useState<string | null>(null);
     const [phone, setPhone]=useState("");
-    const[name,setName]=useState("");
+    const [name,setName]=useState("");
     const [pseudo,setPseudo]=useState("");
 
     const[loading,setLoading]=useState(false);
@@ -129,7 +129,7 @@ export default function RegisterForm({styles,colors}:Props){
                 email: cleanEmail,
                 pseudo: cleanPseudo,
                 photo_profil: avatar,
-                statut_compte: "ACTIF",
+                statut_compte: true,
                 date_creation: createadAt,
                 role: "ROLE_USER",
             }
@@ -185,7 +185,7 @@ export default function RegisterForm({styles,colors}:Props){
               colors={colors}
               sectionTitle="Photo de profil"
               avatar={avatar}
-              handleAction={setAvatar}
+              handleAction={pickAvatar}
               loading={loading}
               
               >

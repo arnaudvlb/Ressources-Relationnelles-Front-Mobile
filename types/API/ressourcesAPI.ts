@@ -1,6 +1,6 @@
+import { Categorie } from "../categories";
 import { AdorerAPI } from "./adorersAPI";
-import { CategorieAPI } from "./categoriesAPI";
-import { ConsultationAPI } from "./consultationAPI";
+import { ConsultationAPI } from "./consultationsAPI";
 import { FavorisAPI } from "./favorisAPI";
 import { UserAPI } from "./usersAPI";
 
@@ -19,7 +19,7 @@ export type RessourceAPI = {
   utilisateur: UserAPI,     
   medias:unknown[],     
   tagsRessources: unknown[], 
-  categories: CategorieAPI, 
+  categories: Categorie, 
   commentaires: unknown[], 
   
   consultations:ConsultationAPI[], 

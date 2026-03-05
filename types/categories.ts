@@ -1,5 +1,5 @@
 export type Categorie = {
-  id_categorie: number;
+  id: number;
   libelle: string;
   couleur: string;
 };
