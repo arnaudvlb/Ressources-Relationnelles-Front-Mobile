@@ -1,16 +1,16 @@
 import { Image, Pressable, Text } from "react-native";
 
 
-type Props={
+type Props=Readonly<{
     styles:any,
     colors:any,
     sectionTitle:string,
     avatar:any,
     handleAction:any,
     loading:boolean,
-    
-    
-}
+
+
+}>
 
 export function RegisterAvatar({styles,colors,sectionTitle,avatar,handleAction,loading}:Props){
     return(

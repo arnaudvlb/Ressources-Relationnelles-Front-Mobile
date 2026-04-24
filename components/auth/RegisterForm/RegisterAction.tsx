@@ -1,13 +1,13 @@
 import { router } from "expo-router";
 import { ActivityIndicator, Pressable, Text } from "react-native";
 
-type Props={
+type Props = Readonly<{
     styles:any,
     handleAction: any,
     loading:boolean,
     buttonPrimaryText:string,
     linkText:string,
-}
+}>
 
 export default function RegisterAction({styles, handleAction,loading, buttonPrimaryText,linkText}:Props){
 

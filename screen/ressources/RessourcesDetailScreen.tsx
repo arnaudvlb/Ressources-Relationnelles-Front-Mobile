@@ -65,16 +65,19 @@ export default function RessourceDetail({id}:Props) {
   //Verifier si l'utilisateur a deja liker la ressources
 
   async function handleToggleLike() {
+    if (!ressource) return;
     if (ressource?.isLike){
       const next = await apiRemoveLike(ressource.idLike)
 
     }else {
-      const userAPI=mapUsertoUserAPi(getCurrentUser()) ;
+      const currentUser = await getCurrentUser();
+      if (!currentUser) return; // Handle case where user is not logged in
+      const userAPI=mapUsertoUserAPi(currentUser) ;
       const ressourceAPI=mapRessourcetoRessourceAPI(ressource);
 
       const next= await apiSetLike({dateAdorer: String(new Date()),utilisateur:userAPI, resource:ressourceAPI })
     }
-    
+
   }
   // async function handleToggleLike() {
   //   const next = await toggleRessourcesLikes(id);

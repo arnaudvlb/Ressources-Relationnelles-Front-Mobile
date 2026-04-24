@@ -1,7 +1,6 @@
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { removeAccessToken } from "@/services/authStorage";
-import { getCurrentUser, removeCurrentUser } from "@/services/userStorage";
+import { doLogout, getCurrentUser } from "@/services/userStorage";
 import { makeProfileStyles } from "@/styles/profileStyles";
 import { User } from "@/types/users";
 import { router } from "expo-router";
@@ -50,18 +49,7 @@ export default function Profile()  {
 
       return d.toLocaleDateString("fr-FR")
     }
-
-    //Fonction de deconnexion
-    async function doLogout() {
-
-        //Supprimer le token d'acces
-        await removeAccessToken();
-        await removeCurrentUser();
-
-        //Redirection sur la page de login
-        router.replace("/login");
-        
-    }
+   
 
     //Fonction bouton deconnexion
     function handleLogout(){
@@ -76,14 +64,7 @@ export default function Profile()  {
         text: "Se déconnecter",
         style: "destructive",
         onPress: async () => {
-          // Supprime le token
-          await removeAccessToken();
-
-          // Supprime l’utilisateur courant
-          await removeCurrentUser();
-
-          // Retour vers la zone publique (accueil public)
-          router.replace("/(public)");
+          await doLogout()
         },
       },
     ]);
@@ -169,14 +150,6 @@ return (
           {formatDate(user.date_creation)}
         </Text>
 
-        {canAccessAdmin ? (
-          <Pressable
-            onPress={() => router.push("/admin/users")}
-            style={styles.adminButton}
-          >
-            <Text style={styles.adminText}>Gestion des utilisateurs</Text>
-          </Pressable>
-        ) : null}
 
         <Pressable onPress={handleLogout} style={styles.logoutButton}>
           <Text style={styles.logoutText}>Se déconnecter</Text>

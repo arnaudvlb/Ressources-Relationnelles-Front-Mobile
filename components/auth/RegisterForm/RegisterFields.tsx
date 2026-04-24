@@ -1,7 +1,7 @@
 import { AppInput } from "@/components/AppInput"
 import { Text } from "react-native"
 
-type Props={
+type Props=Readonly<{
     styles:any,
     sectionTitle:string,
     email:string, 
@@ -11,16 +11,17 @@ type Props={
     password : string, 
     setPassword:(text: string) => void,
     confirm : string, 
-    setConfirm: (text: string) => void,
+     etConfirm: (text: string) => void,
     firstname: string, 
     setFirstname:(text: string) => void,
     name:string , 
     setName:(text: string) => void,
     phone:string , 
     setPhone:(text: string) => void,
+    setConfirm :(text: string) => void,
 
 
-}
+}>
 
 export default function RegisterFields({styles,sectionTitle,email,setEmail,pseudo,setPseudo,password,setPassword,confirm,setConfirm,firstname,setFirstname,
                                        name,setName,phone,setPhone}:Props){

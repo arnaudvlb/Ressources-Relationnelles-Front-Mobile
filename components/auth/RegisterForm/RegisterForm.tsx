@@ -13,10 +13,10 @@ import RegisterFields from "./RegisterFields";
 import RegisterHeader from "./RegisterHeader";
 
 
-type Props={
+type Props=Readonly<{
     styles:any,
     colors:any,
-}
+}>
 
 
 
@@ -176,6 +176,7 @@ export default function RegisterForm({styles,colors}:Props){
               setName={setName}
               phone={phone}
               setPhone={setPhone}
+              setConfirm={setConfirm}
               >
 
               </RegisterFields>

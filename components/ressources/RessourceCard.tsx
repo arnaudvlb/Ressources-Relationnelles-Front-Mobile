@@ -7,7 +7,7 @@ type Props = {
   item: Ressource;
   statsMap: any;
   loading: boolean;
-  error: string;
+  error: string | null ;
   colors: any;
 };
 
