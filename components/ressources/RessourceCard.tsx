@@ -7,7 +7,7 @@ type Props = {
   item: Ressource;
   statsMap: any;
   loading: boolean;
-  error: any;
+  error: string;
   colors: any;
 };
 
@@ -19,7 +19,7 @@ export function RessourceCard({ styles, item, statsMap, loading, error, colors }
   const likes = stats?.likesCount ?? 0;
 
   const categorie = item.categorie ?? null;
-  const tags = item.tags ?? []; // si tags est null => tableau vide
+  const tags = Array.isArray(item.tags) ? item.tags : [];
 
   if (loading) {
     return (
@@ -42,7 +42,7 @@ export function RessourceCard({ styles, item, statsMap, loading, error, colors }
     <Pressable
       onPress={() => {
         router.push({
-          pathname: "/(public)/ressources/[id]",
+          pathname: "/ressources/[id]",
           params: { id: String(item.id_ressource) },
         });
       }}
@@ -51,7 +51,6 @@ export function RessourceCard({ styles, item, statsMap, loading, error, colors }
       <View style={styles.topRow}>
         <Text style={styles.titleText}>{item.titre}</Text>
 
-        {/* ✅ Badge catégorie seulement si categorie existe */}
         {categorie ? (
           <View style={styles.badge}>
             <Text style={[styles.badgeText, { color: categorie.couleur }]}>
@@ -65,21 +64,23 @@ export function RessourceCard({ styles, item, statsMap, loading, error, colors }
         <Text style={styles.metaText}>Par {item.auteur?.pseudo ?? "—"}</Text>
         <Text style={styles.metaText}>{dateText}</Text>
 
-        {/* ❌ ton ancien doublon de catégorie ici était inutile, je l’ai gardé propre */}
+        
         <Text style={styles.metaText}>👁 {views}</Text>
         <Text style={styles.metaText}>❤️ {likes}</Text>
       </View>
 
-     <View style={styles.tagsRow}>
-        {(tags ?? []).map((t, idx) => (
-          <View
-            key={t?.id_tag != null ? String(t.id_tag) : `tag-${item.id_ressource}-${idx}`}
-            style={styles.tag}
-          >
-            <Text style={[styles.tagText, { color: t.couleur }]}>#{t.libelle}</Text>
-          </View>
-        ))}
-      </View>
+    {/* <View style={styles.tagsRow}>
+      {tags.map((t, idx) => (
+        <View
+          key={t?.id_tag != null ? String(t.id_tag) : `tag-${item.id_ressource}-${idx}`}
+          style={styles.tag}
+        >
+          <Text style={[styles.tagText, { color: t?.couleur ?? colors.text }]}>
+            #{t?.libelle ?? "tag"}
+          </Text>
+        </View>
+      ))}
+</View> */}
     </Pressable>
   );
 }

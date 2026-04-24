@@ -30,8 +30,8 @@ export default function MainTabsLayout() {
         }}
       />
 
-           <Tabs.Screen
-             name="ressources/index"
+      <Tabs.Screen
+        name="ressources/index"
              options={{
                title: "Ressources",
                tabBarIcon: ({ color, size }) => (

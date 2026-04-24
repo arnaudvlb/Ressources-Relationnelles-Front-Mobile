@@ -17,15 +17,15 @@ export type RessourceAPI = {
   visibilite: string,
 
   utilisateur: UserAPI,     
-  medias:unknown[],     
-  tagsRessources: unknown[], 
+  medias:unknown[]|null,     
+  tagsRessources: unknown[]|null, 
   categories: Categorie, 
-  commentaires: unknown[], 
+  commentaires: unknown[]|null, 
   
-  consultations:ConsultationAPI[], 
-  partages:unknown[],
-  adorers:AdorerAPI[],
-  favoris:FavorisAPI[], 
+  consultations:ConsultationAPI[]|null, 
+  partages:unknown[]|null,
+  adorers:AdorerAPI[]|null,
+  favoris:FavorisAPI[]|null, 
 };
   
   

@@ -14,7 +14,7 @@ export type Ressource = {
   date_modification: string,
   visibilite: string,
   auteur: User,
-  categorie: Categorie |null,
+  categorie: Categorie,
   tags: Tag[]|null,
   medias: Media[]|null,
   commentaire:Commentaire[]|null,
@@ -22,6 +22,7 @@ export type Ressource = {
 
   likeCount: number,
   isLike : boolean,
+  idLike :number,
   viewsCount:number,
   is_favorite: boolean,
 

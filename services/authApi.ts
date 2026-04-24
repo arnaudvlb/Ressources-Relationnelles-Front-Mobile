@@ -1,9 +1,10 @@
 import { httpRequest } from "@/services/httpClient";
+import { User } from "@/types/users";
 
 export type AuthResponse = {
   data: {
     token:string;
-    //user: User;
+    user: User;
   }
 };
 
