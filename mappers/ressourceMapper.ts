@@ -12,15 +12,19 @@ export  async function mapRessourceAPItoRessource(d: RessourceAPI): Promise<Ress
 
   const currentUserId = currentUser?.id_utilisateur ?? null;
 
+  const adorers = Array.isArray(d.adorers) ? d.adorers : [];
+  const favoris = Array.isArray(d.favoris) ? d.favoris : [];
+
+
   const isLike = currentUserId
-    ? (d.adorers ?? []).some((a: AdorerAPI) => a.utilisateur.id === currentUserId)
+    ? (adorers ?? []).some((a: AdorerAPI) => a.utilisateur.id === currentUserId)
     : false;
     const userLike =currentUserId
-    ? (d.adorers ?? []).find((a: AdorerAPI) => a.utilisateur.id === currentUserId)
+    ? (adorers ?? []).find((a: AdorerAPI) => a.utilisateur.id === currentUserId)
     : null;
 
    const isFavorite = currentUserId
-    ? (d.favoris ?? []).some((a: FavorisAPI) => a.utilisateur.id === currentUserId)
+    ? (favoris ?? []).some((a: FavorisAPI) => a.utilisateur.id === currentUserId)
     : false;
 
     return{

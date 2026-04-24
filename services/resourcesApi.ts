@@ -1,4 +1,4 @@
-import mapRessourceAPItoRessource from "@/mappers/ressourceMapper";
+import { mapRessourceAPItoRessource } from "@/mappers/ressourceMapper";
 import { RessourceAPI } from "@/types/API/ressourcesAPI";
 import { Ressource } from "@/types/ressources";
 import { httpRequest } from "./httpClient";
