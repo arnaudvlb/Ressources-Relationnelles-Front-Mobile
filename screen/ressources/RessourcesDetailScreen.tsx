@@ -7,7 +7,7 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { mapRessourcetoRessourceAPI } from "@/mappers/ressourceMapper";
 import { mapUsertoUserAPi } from "@/mappers/userMapper";
 import { apiGetRessource } from "@/services/resourcesApi";
-import { apiRemoveLike, apiSetLike } from "@/services/statsApi";
+import { apiRemoveFavoris, apiRemoveLike, apiSetConsultation, apiSetFavoris, apiSetLike } from "@/services/statsApi";
 import { getCurrentUser } from "@/services/userStorage";
 import { makeRessourceDetailStyles } from "@/styles/ressourceDetailStyles";
 import { Ressource } from "@/types/ressources";
@@ -30,12 +30,10 @@ export default function RessourceDetail({id}:Props) {
 
 
   // Stats
-  const [userLikeID,setUserLikeID]= useState<number |null>(null)
   const [views, setViews] = useState(0);
   const [likeCount, setLikeCount] = useState(0);
 
   const [liked, setLiked] = useState(false);
-  const [favorisCount, setFavorisCount] = useState(0);
   const [favoris, setFavoris] = useState(false);
 
   // API
@@ -52,6 +50,12 @@ export default function RessourceDetail({id}:Props) {
 
         const r = await apiGetRessource(id);
         setRessource(r);
+
+        if (!ressource){
+          handleToggleConsultation()
+        }
+
+
       } catch (e: any) {
         setError(e?.message ?? "Impossible de charger la ressource.");
       } finally {
@@ -66,30 +70,66 @@ export default function RessourceDetail({id}:Props) {
 
   async function handleToggleLike() {
     if (!ressource) return;
+
     if (ressource?.isLike){
       const next = await apiRemoveLike(ressource.idLike)
 
     }else {
-      const currentUser = await getCurrentUser();
-      if (!currentUser) return; // Handle case where user is not logged in
+      const currentUser = await getCurrentUser()
+      if (!currentUser) return; 
+
       const userAPI=mapUsertoUserAPi(currentUser) ;
-      const ressourceAPI=mapRessourcetoRessourceAPI(ressource);
+      const ressourceAPI= await mapRessourcetoRessourceAPI(ressource);
 
       const next= await apiSetLike({dateAdorer: String(new Date()),utilisateur:userAPI, resource:ressourceAPI })
+
+
     }
 
   }
-  // async function handleToggleLike() {
-  //   const next = await toggleRessourcesLikes(id);
-  //   setLikeCount(next.likesCount);
-  //   setLiked(next.liked);
-  // }
 
-  // async function handleToggleFavoris() {
-  //   const next = await toggleRessourcesFavorite(id);
-  //   setFavorisCount(next.favoriteCount);
-  //   setFavoris(next.favorite);
-  // }
+
+//fonction favoris
+  async function handleToggleFavoris() {
+    if (!ressource) return;
+
+    if (ressource?.isLike){
+      const next = await apiRemoveFavoris(ressource.idLike)
+
+    }else {
+      const currentUser = await getCurrentUser()
+      if (!currentUser) return; 
+
+      const userAPI=mapUsertoUserAPi(currentUser) ;
+      const ressourceAPI= await mapRessourcetoRessourceAPI(ressource);
+
+      const next= await apiSetFavoris({utilisateur:userAPI, resource:ressourceAPI })
+
+
+    }
+
+  }
+
+
+//Fonction vues 
+  async function handleToggleConsultation() {
+    if (!ressource) return;
+
+    if (ressource?.isLike){
+      // TODO: handle if already consulted
+    }else {
+      const currentUser = await getCurrentUser()
+      const userAPI = currentUser ? mapUsertoUserAPi(currentUser): null;
+
+      const ressourceAPI= await mapRessourcetoRessourceAPI(ressource);
+
+      const next= await apiSetConsultation({utilisateur:userAPI, resource:ressourceAPI })
+
+
+    }
+
+  }
+
 
   
   if (loading) {
@@ -121,7 +161,7 @@ export default function RessourceDetail({id}:Props) {
         <RessourceEmpty
           styles={styles}
           title="Ressource Introuvable"
-          empty={`Impossible de trouver la ressource #${String(params.id)}`}
+          empty={`Impossible de trouver la ressource #${String(id)}`}
           buttonText="Retour"
         />
       </SafeAreaView>

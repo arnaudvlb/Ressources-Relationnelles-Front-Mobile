@@ -43,7 +43,7 @@ export default function PublicTabsLayout() {
         <Tabs.Screen
             name="register"
             options={{
-                href: null, // cache complètement l’onglet
+                href: null, 
             }}
             />
 

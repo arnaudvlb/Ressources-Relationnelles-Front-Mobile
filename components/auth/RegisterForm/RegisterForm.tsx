@@ -176,7 +176,6 @@ export default function RegisterForm({styles,colors}:Props){
               setName={setName}
               phone={phone}
               setPhone={setPhone}
-              setConfirm={setConfirm}
               >
 
               </RegisterFields>

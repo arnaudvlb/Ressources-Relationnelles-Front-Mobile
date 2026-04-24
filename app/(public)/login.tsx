@@ -15,7 +15,6 @@ export default function Login(){
 
     //Affichage du composant 
    return (
-    // SafeAreaView pour ne pas être coupé par la barre du haut
     <SafeAreaView style={styles.screen}>
     <LoginForm styles= {styles}></LoginForm>
     </SafeAreaView>
