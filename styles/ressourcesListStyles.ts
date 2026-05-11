@@ -89,5 +89,66 @@ export function makeResourcesListStyles(colors: any) {
       fontSize: 14,
       lineHeight: 20,
     },
+
+    filtersContainer: {
+      backgroundColor: colors.card,
+      borderRadius: 18,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: 10,
+    },
+    searchInput: {
+      color: colors.text,
+      backgroundColor: colors.background,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 14,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      fontSize: 14,
+    },
+    filterTitle: {
+      color: colors.text,
+      fontSize: 14,
+      fontWeight: "900",
+      marginTop: 4,
+    },
+    filtersRow: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 8,
+    },
+    filterButton: {
+      paddingHorizontal: 12,
+      paddingVertical: 7,
+      borderRadius: 999,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.background,
+    },
+    filterButtonActive: {
+      borderColor: colors.tint,
+      backgroundColor: colors.tint,
+    },
+    filterButtonText: {
+      color: colors.muted,
+      fontSize: 12,
+      fontWeight: "800",
+    },
+    filterButtonTextActive: {
+      color: colors.background,
+      fontWeight: "900",
+    },
+    resetButton: {
+      alignSelf: "flex-start",
+      marginTop: 4,
+      paddingVertical: 4,
+    },
+    resetButtonText: {
+      color: colors.tint,
+      fontSize: 13,
+      fontWeight: "900",
+    },
   });
 }
