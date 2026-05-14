@@ -1,5 +1,6 @@
-import RessourceDetail from "@/screen/ressources/RessourcesDetailScreen";
+import RessourcesDetailScreen from "@/screen/ressources/RessourceDetailScreen";
 
-export default RessourceDetail;
+
+export default RessourcesDetailScreen
 
 

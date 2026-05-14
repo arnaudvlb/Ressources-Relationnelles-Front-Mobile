@@ -42,9 +42,9 @@ export function RessourceCard({ styles, item, statsMap, loading, error, colors }
     <Pressable
       onPress={() => {
         router.push({
-          pathname: "/ressources/[id]",
-          params: { id: String(item.id_ressource) },
-        });
+        pathname: "/ressources/[id]",
+        params: { id: String(item.id_ressource) },
+      });
       }}
       style={styles.card}
     >

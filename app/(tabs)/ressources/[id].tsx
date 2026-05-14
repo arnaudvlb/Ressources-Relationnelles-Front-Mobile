@@ -1,9 +1,6 @@
-import RessourceDetail from "@/screen/ressources/RessourcesDetailScreen";
-import { useLocalSearchParams } from "expo-router";
+import RessourcesDetailScreen from "@/screen/ressources/RessourceDetailScreen";
 
-export default function Page() {
-  const params = useLocalSearchParams();
-  const id = Number(params.id);
 
-  return <RessourceDetail id={id} />;
-}
+export default RessourcesDetailScreen
+
+

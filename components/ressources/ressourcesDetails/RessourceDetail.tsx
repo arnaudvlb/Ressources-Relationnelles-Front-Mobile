@@ -7,7 +7,13 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { mapRessourcetoRessourceAPI } from "@/mappers/ressourceMapper";
 import { mapUsertoUserAPi } from "@/mappers/userMapper";
 import { apiGetRessource } from "@/services/resourcesApi";
-import { apiRemoveFavoris, apiRemoveLike, apiSetConsultation, apiSetFavoris, apiSetLike } from "@/services/statsApi";
+import {
+    apiRemoveFavoris,
+    apiRemoveLike,
+    apiSetConsultation,
+    apiSetFavoris,
+    apiSetLike,
+} from "@/services/statsApi";
 import { getCurrentUser } from "@/services/userStorage";
 import { makeRessourceDetailStyles } from "@/styles/ressourceDetailStyles";
 import { Ressource } from "@/types/ressources";
@@ -21,13 +27,10 @@ interface Props {
   id: number;
 }
 
-
-export default function RessourceDetail({id}:Props) {
+export default function RessourceDetail({ id }: Props) {
   const scheme = useColorScheme() ?? "dark";
   const colors = Colors[scheme];
   const styles = makeRessourceDetailStyles(colors);
-
-
 
   // Stats
   const [views, setViews] = useState(0);
@@ -35,6 +38,9 @@ export default function RessourceDetail({id}:Props) {
 
   const [liked, setLiked] = useState(false);
   const [favoris, setFavoris] = useState(false);
+
+  const [idLike, setIdLike] = useState<number | null>(null);
+  const [idFavoris, setIdFavoris] = useState<number | null>(null);
 
   // API
   const [ressource, setRessource] = useState<Ressource | null>(null);
@@ -48,15 +54,24 @@ export default function RessourceDetail({id}:Props) {
         setError(null);
         setRessource(null);
 
+        console.log("ID reçu dans RessourceDetail :", id);
+
         const r = await apiGetRessource(id);
+
         setRessource(r);
 
-        if (!ressource){
-          handleToggleConsultation()
-        }
+        setViews((r as any).viewsCount ?? 0);
+        setLikeCount((r as any).likeCount ?? 0);
 
+        setLiked((r as any).isLike ?? false);
+        setFavoris((r as any).isFavoris ?? false);
 
+        setIdLike((r as any).idLike ?? null);
+        setIdFavoris((r as any).idFavoris ?? null);
+
+        await handleToggleConsultation(r);
       } catch (e: any) {
+        console.log("Erreur détail ressource :", e);
         setError(e?.message ?? "Impossible de charger la ressource.");
       } finally {
         setLoading(false);
@@ -66,72 +81,92 @@ export default function RessourceDetail({id}:Props) {
     load();
   }, [id]);
 
-  //Verifier si l'utilisateur a deja liker la ressources
-
+  // Fonction like
   async function handleToggleLike() {
     if (!ressource) return;
 
-    if (ressource?.isLike){
-      const next = await apiRemoveLike(ressource.idLike)
+    try {
+      if (liked) {
+        if (!idLike) return;
 
-    }else {
-      const currentUser = await getCurrentUser()
-      if (!currentUser) return; 
+        await apiRemoveLike(idLike);
 
-      const userAPI=mapUsertoUserAPi(currentUser) ;
-      const ressourceAPI= await mapRessourcetoRessourceAPI(ressource);
+        setLiked(false);
+        setIdLike(null);
+        setLikeCount((prev) => Math.max(prev - 1, 0));
+      } else {
+        const currentUser = await getCurrentUser();
+        if (!currentUser) return;
 
-      const next= await apiSetLike({dateAdorer: String(new Date()),utilisateur:userAPI, resource:ressourceAPI })
+        const userAPI = mapUsertoUserAPi(currentUser);
+        const ressourceAPI = await mapRessourcetoRessourceAPI(ressource);
 
+        const next: any = await apiSetLike({
+          dateAdorer: new Date().toISOString(),
+          utilisateur: userAPI,
+          resource: ressourceAPI,
+        });
 
+        setLiked(true);
+        setIdLike(next?.id ?? null);
+        setLikeCount((prev) => prev + 1);
+      }
+    } catch (e) {
+      console.log("Erreur like :", e);
     }
-
   }
 
-
-//fonction favoris
+  // Fonction favoris
   async function handleToggleFavoris() {
     if (!ressource) return;
 
-    if (ressource?.isLike){
-      const next = await apiRemoveFavoris(ressource.idLike)
+    try {
+      if (favoris) {
+        if (!idFavoris) return;
 
-    }else {
-      const currentUser = await getCurrentUser()
-      if (!currentUser) return; 
+        await apiRemoveFavoris(idFavoris);
 
-      const userAPI=mapUsertoUserAPi(currentUser) ;
-      const ressourceAPI= await mapRessourcetoRessourceAPI(ressource);
+        setFavoris(false);
+        setIdFavoris(null);
+      } else {
+        const currentUser = await getCurrentUser();
+        if (!currentUser) return;
 
-      const next= await apiSetFavoris({utilisateur:userAPI, resource:ressourceAPI })
+        const userAPI = mapUsertoUserAPi(currentUser);
+        const ressourceAPI = await mapRessourcetoRessourceAPI(ressource);
 
+        const next: any = await apiSetFavoris({
+          utilisateur: userAPI,
+          resource: ressourceAPI,
+        });
 
+        setFavoris(true);
+        setIdFavoris(next?.id ?? null);
+      }
+    } catch (e) {
+      console.log("Erreur favoris :", e);
     }
-
   }
 
+  // Fonction vues
+  async function handleToggleConsultation(ressourceLoaded: Ressource) {
+    try {
+      const currentUser = await getCurrentUser();
+      const userAPI = currentUser ? mapUsertoUserAPi(currentUser) : null;
 
-//Fonction vues 
-  async function handleToggleConsultation() {
-    if (!ressource) return;
+      const ressourceAPI = await mapRessourcetoRessourceAPI(ressourceLoaded);
 
-    if (ressource?.isLike){
-      // TODO: handle if already consulted
-    }else {
-      const currentUser = await getCurrentUser()
-      const userAPI = currentUser ? mapUsertoUserAPi(currentUser): null;
+      await apiSetConsultation({
+        utilisateur: userAPI,
+        resource: ressourceAPI,
+      });
 
-      const ressourceAPI= await mapRessourcetoRessourceAPI(ressource);
-
-      const next= await apiSetConsultation({utilisateur:userAPI, resource:ressourceAPI })
-
-
+      setViews((prev) => prev + 1);
+    } catch (e) {
+      console.log("Erreur consultation :", e);
     }
-
   }
 
-
-  
   if (loading) {
     return (
       <SafeAreaView style={styles.screen}>
@@ -140,7 +175,6 @@ export default function RessourceDetail({id}:Props) {
     );
   }
 
-  
   if (error) {
     return (
       <SafeAreaView style={styles.screen}>
@@ -154,7 +188,6 @@ export default function RessourceDetail({id}:Props) {
     );
   }
 
-  
   if (!ressource) {
     return (
       <SafeAreaView style={styles.screen}>
