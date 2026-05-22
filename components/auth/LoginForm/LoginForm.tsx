@@ -1,5 +1,6 @@
 import { apiLogin } from "@/services/authApi";
 import { saveAccessToken } from "@/services/authStorage";
+import { saveCurrentUser } from "@/services/userStorage";
 import { isEmailValid, isPasswordValid } from "@/utils/validators";
 import { router } from "expo-router";
 import React, { useCallback, useState } from "react";
@@ -58,8 +59,7 @@ export default function LoginForm({ styles }: Readonly<Props>) {
 
       // Stockage local
       await saveAccessToken(result.data.token);
-      // await saveRefreshToken(result.refreshToken);
-      // await saveCurrentUser(result.user);
+       await saveCurrentUser(result.data.user);
 
       // Message succès 
       setMessage("Connexion OK ✅");

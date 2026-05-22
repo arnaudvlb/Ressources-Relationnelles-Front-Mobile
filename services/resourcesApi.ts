@@ -20,6 +20,8 @@ export type RessourcesFiltre = {
 }
 
 
+
+
 //Get ressources
 export async function apiListRessources(
   filtre?: RessourcesFiltre
@@ -67,3 +69,6 @@ export async function apiGetRessource(id: number): Promise<Ressource> {
 
   return await mapRessourceAPItoRessource(data);
 }
+
+
+

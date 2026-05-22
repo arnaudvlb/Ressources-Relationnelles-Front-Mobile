@@ -15,19 +15,22 @@ import {
     apiSetLike,
 } from "@/services/statsApi";
 import { getCurrentUser } from "@/services/userStorage";
-import { makeRessourceDetailStyles } from "@/styles/ressourceDetailStyles";
+import { Commentaire } from "@/types/commentaires";
 import { Ressource } from "@/types/ressources";
 import { Text } from "@react-navigation/elements";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { makeRessourceDetailStyles } from "./module.RessourceDetail.style";
+import RessourceComments from "./RessourceCommentaire";
+
 
 interface Props {
   id: number;
 }
 
-export default function RessourceDetail({ id }: Props) {
+export default function RessourceDetail({ id }: Readonly<Props>) {
   const scheme = useColorScheme() ?? "dark";
   const colors = Colors[scheme];
   const styles = makeRessourceDetailStyles(colors);
@@ -39,13 +42,14 @@ export default function RessourceDetail({ id }: Props) {
   const [liked, setLiked] = useState(false);
   const [favoris, setFavoris] = useState(false);
 
-  const [idLike, setIdLike] = useState<number | null>(null);
-  const [idFavoris, setIdFavoris] = useState<number | null>(null);
+  const [idLike, setIdLike] = useState(0);
+  const [idFavoris, setIdFavoris] = useState(0);
 
   // API
   const [ressource, setRessource] = useState<Ressource | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [commentaires, setCommentaires] = useState<Commentaire[]>([]);
 
   useEffect(() => {
     async function load() {
@@ -60,16 +64,18 @@ export default function RessourceDetail({ id }: Props) {
 
         setRessource(r);
 
-        setViews((r as any).viewsCount ?? 0);
-        setLikeCount((r as any).likeCount ?? 0);
+        setViews(r.viewsCount ?? 0);
+        setLikeCount(r.likeCount ?? 0);
 
-        setLiked((r as any).isLike ?? false);
-        setFavoris((r as any).isFavoris ?? false);
+        setLiked(r.isLike ?? false);
+        setFavoris(r.is_favorite ?? false);
 
-        setIdLike((r as any).idLike ?? null);
-        setIdFavoris((r as any).idFavoris ?? null);
+        setIdLike(r.idLike ?? 0);
+        setIdFavoris(r.idFavoris ?? 0);
 
-        await handleToggleConsultation(r);
+        setCommentaires(r.commentaire ?? []);
+
+        await handleSetConsultation(r);
       } catch (e: any) {
         console.log("Erreur détail ressource :", e);
         setError(e?.message ?? "Impossible de charger la ressource.");
@@ -85,6 +91,13 @@ export default function RessourceDetail({ id }: Props) {
   async function handleToggleLike() {
     if (!ressource) return;
 
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+      router.push("/login");
+      return;
+    }
+
     try {
       if (liked) {
         if (!idLike) return;
@@ -92,12 +105,9 @@ export default function RessourceDetail({ id }: Props) {
         await apiRemoveLike(idLike);
 
         setLiked(false);
-        setIdLike(null);
+        setIdLike(0);
         setLikeCount((prev) => Math.max(prev - 1, 0));
       } else {
-        const currentUser = await getCurrentUser();
-        if (!currentUser) return;
-
         const userAPI = mapUsertoUserAPi(currentUser);
         const ressourceAPI = await mapRessourcetoRessourceAPI(ressource);
 
@@ -108,7 +118,7 @@ export default function RessourceDetail({ id }: Props) {
         });
 
         setLiked(true);
-        setIdLike(next?.id ?? null);
+        setIdLike(next?.id ?? 0);
         setLikeCount((prev) => prev + 1);
       }
     } catch (e) {
@@ -120,6 +130,13 @@ export default function RessourceDetail({ id }: Props) {
   async function handleToggleFavoris() {
     if (!ressource) return;
 
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+      router.push("/login");
+      return;
+    }
+
     try {
       if (favoris) {
         if (!idFavoris) return;
@@ -127,11 +144,8 @@ export default function RessourceDetail({ id }: Props) {
         await apiRemoveFavoris(idFavoris);
 
         setFavoris(false);
-        setIdFavoris(null);
+        setIdFavoris(0);
       } else {
-        const currentUser = await getCurrentUser();
-        if (!currentUser) return;
-
         const userAPI = mapUsertoUserAPi(currentUser);
         const ressourceAPI = await mapRessourcetoRessourceAPI(ressource);
 
@@ -141,15 +155,15 @@ export default function RessourceDetail({ id }: Props) {
         });
 
         setFavoris(true);
-        setIdFavoris(next?.id ?? null);
+        setIdFavoris(next?.id ?? 0);
       }
     } catch (e) {
       console.log("Erreur favoris :", e);
     }
   }
 
-  // Fonction vues
-  async function handleToggleConsultation(ressourceLoaded: Ressource) {
+  // Fonction consultation
+  async function handleSetConsultation(ressourceLoaded: Ressource) {
     try {
       const currentUser = await getCurrentUser();
       const userAPI = currentUser ? mapUsertoUserAPi(currentUser) : null;
@@ -188,12 +202,18 @@ export default function RessourceDetail({ id }: Props) {
     );
   }
 
+
+//fonction commentaire 
+function handleCommentaireAdded(commentaire: Commentaire) {
+  setCommentaires((prev) => [commentaire, ...prev]);
+}
+
   if (!ressource) {
     return (
       <SafeAreaView style={styles.screen}>
         <RessourceEmpty
           styles={styles}
-          title="Ressource Introuvable"
+          title="Ressource introuvable"
           empty={`Impossible de trouver la ressource #${String(id)}`}
           buttonText="Retour"
         />
@@ -205,7 +225,7 @@ export default function RessourceDetail({ id }: Props) {
     ? String(ressource.date_creation).slice(0, 10)
     : "-";
 
-  const medias = (ressource as any).medias ?? [];
+  const medias = ressource.medias ?? [];
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -226,7 +246,17 @@ export default function RessourceDetail({ id }: Props) {
 
         <RessourceMedia styles={styles} colors={colors} medias={medias} />
 
-        <Pressable onPress={() => router.push("/ressources")} style={styles.button}>
+        <RessourceComments
+         styles={styles}
+            ressource={ressource}
+            commentaires={commentaires}
+            onCommentaireAdded={handleCommentaireAdded}
+            />
+
+        <Pressable
+          onPress={() => router.push("/ressources")}
+          style={styles.button}
+        >
           <Text style={styles.buttonText}>Retour à la liste</Text>
         </Pressable>
       </ScrollView>
