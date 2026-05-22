@@ -8,6 +8,7 @@ type RequestOptions = {
   path: string;
   body?: unknown;
   auth?: boolean;
+  contentType?: string;
 };
 
 export async function httpRequest<T>({
@@ -15,15 +16,22 @@ export async function httpRequest<T>({
   path,
   body,
   auth = false,
+  contentType = "application/json",
 }: RequestOptions): Promise<T> {
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
     Accept: "application/json",
   };
 
+  if (body) {
+    headers["Content-Type"] = contentType;
+  }
+
   if (auth) {
     const token = await getAccessToken();
-    if (token) headers.Authorization = `Bearer ${token}`;
+
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
   }
 
   const res = await fetch(`${API_BASE_URL}${path}`, {
@@ -33,10 +41,22 @@ export async function httpRequest<T>({
   });
 
   const text = await res.text();
-  const data = text ? JSON.parse(text) : null;
+
+  let data = null;
+
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    data = text;
+  }
 
   if (!res.ok) {
-    const msg = data?.message || data?.error || `Erreur API (${res.status})`;
+    const msg =
+      data?.message ||
+      data?.detail ||
+      data?.error ||
+      `Erreur API (${res.status})`;
+
     throw new Error(msg);
   }
 

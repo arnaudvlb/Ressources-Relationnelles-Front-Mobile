@@ -1,12 +1,24 @@
 import { httpRequest } from "@/services/httpClient";
 import { User } from "@/types/users";
 
+
 export type AuthResponse = {
   data: {
     token:string;
     user: User;
   }
 };
+
+type UpdateProfilePayload = {
+  pseudo: string;
+  prenom: string;
+  nom: string;
+  email: string;
+  telephone?: string;
+};
+
+
+
 
 export async function apiLogin(payload: { email: string; password: string }): Promise<AuthResponse> {
   return httpRequest<AuthResponse>({
@@ -23,5 +35,19 @@ export async function apiRegister(payload: any): Promise<AuthResponse> {
     path: "/register",
     body: payload,
     auth: false,
+  });
+}
+
+
+export async function apiUpdateUserProfile(
+  id: number,
+  payload: UpdateProfilePayload
+): Promise<User> {
+  return httpRequest<User>({
+    method: "PATCH",
+    path: `/utilisateurs/${id}`,
+    auth: true,
+    contentType: "application/merge-patch+json",
+    body: payload,
   });
 }
