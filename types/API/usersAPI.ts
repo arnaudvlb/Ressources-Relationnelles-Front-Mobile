@@ -5,6 +5,7 @@ export type UserAPI ={
     telephone:string|null,
     email :string,
     pseudo:string,
-    statusCompte:boolean;
-    dateCreation:string
+    statusCompte:boolean,
+    dateCreation:string,
+    photo_profil : string |null,
 }

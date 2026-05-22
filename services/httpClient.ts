@@ -33,7 +33,12 @@ export async function httpRequest<T>({
       headers.Authorization = `Bearer ${token}`;
     }
   }
-
+console.log("HTTP REQUEST", {
+  url: `${API_BASE_URL}${path}`,
+  method,
+  headers,
+  body,
+});
   const res = await fetch(`${API_BASE_URL}${path}`, {
     method,
     headers,

@@ -29,7 +29,7 @@ export  function mapUsertoUserAPi (d:User):UserAPI{
         telephone: d.telephone,
         email: d.email,
         pseudo: d.pseudo,
-        // photo_profil: null,
+         photo_profil: d.photo_profil,
         statusCompte : d.statut_compte,
         dateCreation  : d.date_creation,
         //role: "ROLE_USER"

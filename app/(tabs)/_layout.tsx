@@ -47,6 +47,15 @@ export default function MainTabsLayout() {
              }}
          />
         
+      <Tabs.Screen
+        name="amis"
+        options={{
+          title: "Amis",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="house.fill" color={color} />
+          ),
+        }}
+      />
 
       {/* Onglet Compte */}
       <Tabs.Screen
