@@ -23,7 +23,6 @@ export default function LoginAction({styles,handleAction, buttonTextLogin, butto
           {loading ? <ActivityIndicator /> : <Text style={styles.buttonText}>{buttonTextLogin}</Text>}
         </Pressable>
 
-        <Text style={styles.helper}>Démo mobile</Text>
 
         <Pressable onPress={() => router.push("/register")} disabled={loading}>
           <Text style={styles.link}>{buttonTextAccount}</Text>
