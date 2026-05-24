@@ -1,13 +1,14 @@
+import { makeResourcesListStyles } from "@/components/ressources/module.RessourcesList.style";
 import { Colors } from "@/constants/theme";
 import { apiListCategories, apiListTags, apiListTypes } from "@/services/FiltresApi";
 import { apiListRessources } from "@/services/resourcesApi";
-import { makeResourcesListStyles } from "@/styles/ressourcesListStyles";
 import { Categorie } from "@/types/categories";
 import { Ressource } from "@/types/ressources";
 import { Tag } from "@/types/tags";
 import { Type } from "@/types/types";
+import { router } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { FlatList, Text, useColorScheme } from "react-native";
+import { FlatList, Pressable, Text, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RessourceCard } from "./RessourceCard";
 import RessourcesFilters from "./RessourcesFiltres";
@@ -149,7 +150,12 @@ export default function RessourcesListe() {
         subtitle="Liste des ressources disponibles"
       />
 
-     
+     <Pressable
+      onPress={() => router.push("/ressources/add")}
+      style={styles.addButton}
+    >
+      <Text style={styles.addButtonText}>Ajouter une ressource</Text>
+    </Pressable>
       <RessourcesFilters
         styles={styles}
         colors={colors}

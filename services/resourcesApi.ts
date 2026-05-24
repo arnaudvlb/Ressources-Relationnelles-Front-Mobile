@@ -1,5 +1,6 @@
 import { mapRessourceAPItoRessource } from "@/mappers/ressourceMapper";
 import { RessourceAPI } from "@/types/API/ressourcesAPI";
+import { UserAPI } from "@/types/API/usersAPI";
 import { Ressource } from "@/types/ressources";
 import { httpRequest } from "./httpClient";
 
@@ -19,7 +20,20 @@ export type RessourcesFiltre = {
   tagIds?: string[],
 }
 
+export type CreateRessourcePayload = {
+  titre: string;
+  contenu: string;
+  valide: boolean;
+  estVisible: boolean;
+  dateCreation: string;
+  visibilite: string;
+  utilisateur: UserAPI;
+  categories: string;
+  tagsRessources: string[];
+  medias: unknown[];
+};
 
+export type UpdateRessourcePayload = Partial<CreateRessourcePayload>;
 
 
 //Get ressources
@@ -70,5 +84,34 @@ export async function apiGetRessource(id: number): Promise<Ressource> {
   return await mapRessourceAPItoRessource(data);
 }
 
+
+
+
+export async function apiCreateRessource(
+  payload: CreateRessourcePayload
+): Promise<Ressource> {
+  const response = await httpRequest<RessourceAPI>({
+    method: "POST",
+    path: "/ressources",
+    auth: true,
+    body: payload,
+  });
+
+  return mapRessourceAPItoRessource(response);
+}
+
+export async function apiUpdateRessource(
+  id: number,
+  payload: UpdateRessourcePayload
+): Promise<Ressource> {
+  const response = await httpRequest<RessourceAPI>({
+    method: "PUT",
+    path: `/ressources/${id}`,
+    auth: true,
+    body: payload,
+  });
+
+  return mapRessourceAPItoRessource(response);
+}
 
 

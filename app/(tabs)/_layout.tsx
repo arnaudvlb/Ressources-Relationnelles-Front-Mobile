@@ -91,7 +91,22 @@ export default function MainTabsLayout() {
           href: null,
         }}
       />
-      
+
+
+      <Tabs.Screen
+        name="ressources/edit/[id]"
+        options={{
+          href: null,
+        }}
+      />
+
+            <Tabs.Screen
+        name="ressources/add"
+        options={{
+          href: null,
+        }}
+      />
+                  
 
     </Tabs>
   );

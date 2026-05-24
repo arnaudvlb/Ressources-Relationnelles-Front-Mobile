@@ -150,5 +150,20 @@ export function makeResourcesListStyles(colors: any) {
       fontSize: 13,
       fontWeight: "900",
     },
+    addButton: {
+      marginHorizontal: 16,
+      marginBottom: 12,
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 16,
+      backgroundColor: colors.tint,
+      alignItems: "center",
+    },
+
+    addButtonText: {
+      color: colors.buttonText ?? "#FFFFFF",
+      fontWeight: "900",
+      fontSize: 15,
+    },
   });
 }

@@ -7,3 +7,10 @@ export  function formatDate(iso: string | undefined) {
 
     return d.toLocaleDateString("fr-FR");
   }
+
+
+ export  function getUserId(user: any): number | null {
+    if (!user) return null;
+
+    return user.id ?? user.id_utilisateur ?? null;
+  }
