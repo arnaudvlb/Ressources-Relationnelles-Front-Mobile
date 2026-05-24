@@ -51,8 +51,18 @@ export default function MainTabsLayout() {
         name="amis"
         options={{
           title: "Amis",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="people" size={size ?? 28} color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="message"
+        options={{
+          title: "Messages",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbubble-ellipses" size={size ?? 28} color={color} />
           ),
         }}
       />

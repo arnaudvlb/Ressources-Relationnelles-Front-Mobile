@@ -18,19 +18,17 @@ export default function LoginForm({ styles }: Readonly<Props>) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // État UI (comme le repo web)
+  // État UI 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
-  // Soumission (équivalent onSubmit)
+
   const handleLogin = useCallback(async () => {
-    // Reset message au début
+  
     setMessage(null);
 
-    // Lock UI
     setLoading(true);
 
-    // Clean inputs
     const cleanEmail = email.trim();
     const cleanPassword = password.trim();
 
@@ -61,7 +59,6 @@ export default function LoginForm({ styles }: Readonly<Props>) {
       await saveAccessToken(result.data.token);
        await saveCurrentUser(result.data.user);
 
-      // Message succès 
       setMessage("Connexion OK ✅");
 
       // Redirection
