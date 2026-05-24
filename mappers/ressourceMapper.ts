@@ -8,31 +8,54 @@ import { Ressource } from "@/types/ressources";
 import { Tag } from "@/types/tags";
 import { mapUserAPItoUser, mapUsertoUserAPi } from "./userMapper";
 
+function getUserId(user: any): number | null {
+  if (!user) return null;
 
+  if (typeof user === "number") return user;
 
-export async function mapRessourceAPItoRessource(d: RessourceAPI): Promise<Ressource> {
+  if (typeof user === "string") {
+    const id = Number(user.split("/").pop());
+    return isNaN(id) ? null : id;
+  }
+
+  return user.id ?? user.id_utilisateur ?? null;
+}
+
+export async function mapRessourceAPItoRessource(
+  d: RessourceAPI
+): Promise<Ressource> {
   const currentUser = await getCurrentUser();
 
-  const currentUserId = currentUser?.id_utilisateur ?? null;
+  const currentUserId = getUserId(currentUser);
 
   const adorers = Array.isArray(d.adorers) ? d.adorers : [];
   const favoris = Array.isArray(d.favoris) ? d.favoris : [];
 
-  const isLike = currentUserId
-    ? adorers.some((a: AdorerAPI) => a.utilisateur.id === currentUserId)
-    : false;
+  console.log("========== MAPPER RESSOURCE ==========");
+  console.log("currentUser dans mapper :", currentUser);
+  console.log("currentUserId dans mapper :", currentUserId);
+  console.log("adorers dans mapper :", adorers);
+  console.log("favoris dans mapper :", favoris);
 
   const userLike = currentUserId
-    ? adorers.find((a: AdorerAPI) => a.utilisateur.id === currentUserId)
+    ? adorers.find((a: AdorerAPI) => {
+        const utilisateurId = getUserId(a.utilisateur);
+        console.log("id utilisateur like testé :", utilisateurId);
+        return utilisateurId === currentUserId;
+      })
     : null;
-
-  const isFavorite = currentUserId
-    ? favoris.some((f: FavorisAPI) => f.utilisateur.id === currentUserId)
-    : false;
 
   const userFavoris = currentUserId
-    ? favoris.find((f: FavorisAPI) => f.utilisateur.id === currentUserId)
+    ? favoris.find((f: FavorisAPI) => {
+        const utilisateurId = getUserId(f.utilisateur);
+        console.log("id utilisateur favori testé :", utilisateurId);
+        return utilisateurId === currentUserId;
+      })
     : null;
+
+  console.log("userLike trouvé :", userLike);
+  console.log("userFavoris trouvé :", userFavoris);
+  console.log("========== FIN MAPPER RESSOURCE ==========");
 
   return {
     id_ressource: d.id,
@@ -50,38 +73,35 @@ export async function mapRessourceAPItoRessource(d: RessourceAPI): Promise<Resso
     commentaire: (d.commentaires as Commentaire[]) ?? null,
 
     likeCount: d.adorers?.length ?? 0,
-    isLike: isLike,
+    isLike: !!userLike,
     idLike: userLike?.id ?? 0,
+
     viewsCount: d.consultations?.length ?? 0,
 
-    is_favorite: isFavorite,
+    is_favorite: !!userFavoris,
     idFavoris: userFavoris?.id ?? 0,
   };
 }
 
-
-
-export  async function mapRessourcetoRessourceAPI(d: Ressource): Promise<RessourceAPI> {
-  const currentUser = await getCurrentUser(); // User | null
-
-
-    return{
-        id: d.id_ressource,
-        titre: d.titre,
-        contenu: d.contenu,
-        valide: d.valide,
-        estVisible : d.active,
-        dateCreation : d.date_creation,
-        visibilite: d.visibilite,
-        utilisateur: mapUsertoUserAPi(d.auteur),
-        categories:d.categorie,
-        tagsRessources: d.tags,
-        medias: d.medias,
-        commentaires:d.commentaire,
-        consultations:[],
-        partages:[],
-        adorers:[],
-        favoris:[],
-
-    }
+export async function mapRessourcetoRessourceAPI(
+  d: Ressource
+): Promise<RessourceAPI> {
+  return {
+    id: d.id_ressource,
+    titre: d.titre,
+    contenu: d.contenu,
+    valide: d.valide,
+    estVisible: d.active,
+    dateCreation: d.date_creation,
+    visibilite: d.visibilite,
+    utilisateur: mapUsertoUserAPi(d.auteur),
+    categories: d.categorie,
+    tagsRessources: d.tags,
+    medias: d.medias,
+    commentaires: d.commentaire,
+    consultations: [],
+    partages: [],
+    adorers: [],
+    favoris: [],
+  };
 }

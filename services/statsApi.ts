@@ -2,18 +2,18 @@ import { httpRequest } from "./httpClient";
 
 export type CreateLikePayload = {
   dateAdorer: string;
-  id_utilisateur: number;
-  id_resource: number;
+  utilisateur: string;
+  resource: string;
 };
 
 export type CreateFavorisPayload = {
-  id_utilisateur: number;
-  id_resource: number;
+  utilisateur: string;
+  resource: string;
 };
 
 export type CreateConsultationPayload = {
-  id_utilisateur: number | null;
-  id_resource: number;
+  utilisateur: string | null;
+  resource: string;
 };
 
 export async function apiSetLike(payload: CreateLikePayload) {
@@ -42,7 +42,7 @@ export async function apiSetFavoris(payload: CreateFavorisPayload) {
   });
 }
 
-export async function apiRemoveFavoris(id: number) {
+export async function apiRemoveFavoris(id: number): Promise<void> {
   return httpRequest<void>({
     method: "DELETE",
     path: `/favoris/${id}`,
