@@ -113,8 +113,8 @@ export default function RessourceDetail({ id }: Readonly<Props>) {
 
         const next: any = await apiSetLike({
           dateAdorer: new Date().toISOString(),
-          utilisateur: userAPI,
-          resource: ressourceAPI,
+          id_utilisateur: userAPI.id,
+          id_resource: ressourceAPI.id,
         });
 
         setLiked(true);
@@ -150,8 +150,8 @@ export default function RessourceDetail({ id }: Readonly<Props>) {
         const ressourceAPI = await mapRessourcetoRessourceAPI(ressource);
 
         const next: any = await apiSetFavoris({
-          utilisateur: userAPI,
-          resource: ressourceAPI,
+          id_utilisateur: userAPI.id,
+          id_resource: ressourceAPI.id,
         });
 
         setFavoris(true);
@@ -171,8 +171,8 @@ export default function RessourceDetail({ id }: Readonly<Props>) {
       const ressourceAPI = await mapRessourcetoRessourceAPI(ressourceLoaded);
 
       await apiSetConsultation({
-        utilisateur: userAPI,
-        resource: ressourceAPI,
+        id_utilisateur: userAPI?.id ||null,
+        id_resource: ressourceAPI.id, 
       });
 
       setViews((prev) => prev + 1);
