@@ -85,6 +85,13 @@ export default function MainTabsLayout() {
           href: null,
         }}
       />
+  <Tabs.Screen
+        name="messages/[userId]"
+        options={{
+          href: null,
+        }}
+      />
+      
 
     </Tabs>
   );

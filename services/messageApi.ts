@@ -9,18 +9,12 @@ export type MessagesResponse = {
   "@type"?: string;
 };
 
-export type MessageResponse = Message;
-
 export type CreateMessagePayload = {
   contenu: string;
   pieceJointe?: string | null;
-  dateEnvoi: string;
+  dateEnvoie: string;
   id_expediteur: number;
   id_destinataire: number;
-};
-
-export type CreateMessageResponse = {
-  message: string;
 };
 
 export async function apiGetAllMessages(): Promise<MessagesResponse> {
@@ -31,29 +25,13 @@ export async function apiGetAllMessages(): Promise<MessagesResponse> {
   });
 }
 
-export async function apiGetMessageById(id: number): Promise<MessageResponse> {
-  return httpRequest<MessageResponse>({
-    method: "GET",
-    path: `/messages/${id}`,
-    auth: true,
-  });
-}
-
 export async function apiCreateMessage(
   payload: CreateMessagePayload
-): Promise<CreateMessageResponse> {
-  return httpRequest<CreateMessageResponse>({
+): Promise<Message> {
+  return httpRequest<Message>({
     method: "POST",
     path: "/messages",
     auth: true,
     body: payload,
-  });
-}
-
-export async function apiDeleteMessage(id: number): Promise<void> {
-  return httpRequest<void>({
-    method: "DELETE",
-    path: `/messages/${id}`,
-    auth: true,
   });
 }
