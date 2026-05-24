@@ -1,70 +1,60 @@
-import { AdorerAPI } from "@/types/API/adorersAPI";
-import { ConsultationAPI } from "@/types/API/consultationsAPI";
-import { FavorisAPI } from "@/types/API/favorisAPI";
 import { httpRequest } from "./httpClient";
 
+export type CreateLikePayload = {
+  dateAdorer: string;
+  id_utilisateur: number;
+  id_resource: number;
+};
 
-export async function apiSetLike(data : Partial<AdorerAPI>) {
-    return httpRequest({
-        method:"POST",
-        path:"/adorers"
-    })
+export type CreateFavorisPayload = {
+  id_utilisateur: number;
+  id_resource: number;
+};
+
+export type CreateConsultationPayload = {
+  id_utilisateur: number | null;
+  id_resource: number;
+};
+
+export async function apiSetLike(payload: CreateLikePayload) {
+  return httpRequest<any>({
+    method: "POST",
+    path: "/adorers",
+    auth: true,
+    body: payload,
+  });
 }
 
-export async function apiRemoveLike(id: number){
-     return httpRequest({
-        method:"DELETE",
-        path:`/adorers/${id}`    })
+export async function apiRemoveLike(id: number) {
+  return httpRequest<void>({
+    method: "DELETE",
+    path: `/adorers/${id}`,
+    auth: true,
+  });
 }
 
-
-export async function apiGetLikes() {
-    return httpRequest({
-        method: "GET",
-        path: "/adorers"
-    });
+export async function apiSetFavoris(payload: CreateFavorisPayload) {
+  return httpRequest<any>({
+    method: "POST",
+    path: "/favoris",
+    auth: true,
+    body: payload,
+  });
 }
 
-
-
-
-export async function apiSetFavoris(data: Partial<FavorisAPI>) {
-    return httpRequest({
-        method:"POST",
-        path:"/favoris"
-    })
-    
+export async function apiRemoveFavoris(id: number) {
+  return httpRequest<void>({
+    method: "DELETE",
+    path: `/favoris/${id}`,
+    auth: true,
+  });
 }
 
-
-
-export async function apiRemoveFavoris(id:number) {
-    return({
-        method:"DELETE",
-        path:"/favoris"
-    })
-    
+export async function apiSetConsultation(payload: CreateConsultationPayload) {
+  return httpRequest<any>({
+    method: "POST",
+    path: "/consultations",
+    auth: true,
+    body: payload,
+  });
 }
-
-
-
-
-
-export async function apiSetConsultation(data: Partial<ConsultationAPI>) {
-    return httpRequest({
-        method:"POST",
-        path:"/consultations"
-    })
-    
-}
-
-
-
-export async function apiRemoveConsultation(id:number) {
-    return({
-        method:"DELETE",
-        path:"/consultations"
-    })
-    
-}
-
