@@ -8,11 +8,11 @@ import { mapRessourcetoRessourceAPI } from "@/mappers/ressourceMapper";
 import { mapUsertoUserAPi } from "@/mappers/userMapper";
 import { apiGetRessource } from "@/services/resourcesApi";
 import {
-    apiRemoveFavoris,
-    apiRemoveLike,
-    apiSetConsultation,
-    apiSetFavoris,
-    apiSetLike,
+  apiRemoveFavoris,
+  apiRemoveLike,
+  apiSetConsultation,
+  apiSetFavoris,
+  apiSetLike,
 } from "@/services/statsApi";
 import { getCurrentUser } from "@/services/userStorage";
 import { Commentaire } from "@/types/commentaires";
