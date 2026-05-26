@@ -3,18 +3,19 @@
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
+import { getUserId } from "@/config/format";
 import { apiUpdateUserProfile } from "@/services/authApi";
 import { doLogout, getCurrentUser, saveCurrentUser } from "@/services/userStorage";
 import { User } from "@/types/users";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-    Alert,
-    Image,
-    Pressable,
-    ScrollView,
-    Text,
-    View
+  Alert,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { makeProfileStyles } from "./module.profil.style";
@@ -86,10 +87,17 @@ export default function ProfilForm() {
       return;
     }
 
+    const idUser = getUserId(user);
+    if(!idUser) {
+      Alert.alert("Probeme utilisateur", "Impossible de récupérer l'identifiant de l'utilisateur.");
+      return;
+    }
     try {
       setSaving(true);
 
-      const updatedUser = await apiUpdateUserProfile(user.id_utilisateur, {
+
+
+      const updatedUser = await apiUpdateUserProfile( idUser  , {
         pseudo: pseudo.trim(),
         nom: nom.trim(),
         prenom: prenom.trim(),

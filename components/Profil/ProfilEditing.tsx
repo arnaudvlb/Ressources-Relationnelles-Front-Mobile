@@ -1,4 +1,3 @@
-import { formatDate } from "@/config/format"
 import { User } from "@/types/users"
 import { Pressable, Text, View } from "react-native"
 
@@ -37,20 +36,7 @@ export default function ProfilEditing({styles,user,setIsEditing}:Readonly<Props>
             <Text style={styles.value}>{user.telephone ?? "-"}</Text>
             </View>
 
-            <View style={styles.infoGroup}>
-            <Text style={styles.label}>Statut du compte</Text>
-            <Text style={styles.value}>{user.statut_compte}</Text>
-            </View>
 
-            <View style={styles.infoGroup}>
-            <Text style={styles.label}>Rôle</Text>
-            <Text style={styles.value}>{user.role}</Text>
-            </View>
-
-            <View style={styles.infoGroup}>
-            <Text style={styles.label}>Membre depuis</Text>
-            <Text style={styles.value}>{formatDate(user.date_creation)}</Text>
-            </View>
 
             <Pressable
             onPress={() => setIsEditing(true)}

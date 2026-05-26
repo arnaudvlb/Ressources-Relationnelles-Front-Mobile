@@ -6,11 +6,11 @@ import { Ressource } from "@/types/ressources";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
-    Image,
-    Pressable,
-    Text,
-    TextInput,
-    View,
+  Image,
+  Pressable,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 
 type Props = {
@@ -45,63 +45,111 @@ export default function RessourceComments({
   }
 
   async function handleCreateCommentaire() {
-    const currentUser = await getCurrentUser();
+  console.log("🟦 Début handleCreateCommentaire");
+  console.log("Contenu saisi :", contenu);
+  console.log("Ressource actuelle :", ressource);
 
-    if (!currentUser) {
-      router.push("/login");
-      return;
-    }
+  const currentUser = await getCurrentUser();
 
-    if (!contenu.trim()) return;
+  console.log("Utilisateur courant récupéré :", currentUser);
 
-    try {
-      setLoading(true);
-
-      const commentaire = await apiCreateCommentaire({
-        contenu: contenu.trim(),
-        utilisateur: currentUser,
-        resource: ressource,
-        commentaireParent: null,
-      });
-
-      onCommentaireAdded(commentaire);
-      setContenu("");
-    } catch (e) {
-      console.log("Erreur création commentaire :", e);
-    } finally {
-      setLoading(false);
-    }
+  if (!currentUser) {
+    console.log("❌ Aucun utilisateur connecté, redirection login");
+    router.push("/login");
+    return;
   }
+
+  if (!contenu.trim()) {
+    console.log("❌ Commentaire vide, arrêt");
+    return;
+  }
+
+  const payload = {
+    contenu: contenu.trim(),
+    utilisateur: currentUser,
+    resource: ressource,
+    commentaireParent: null,
+  };
+
+  console.log("📤 Payload envoyé pour création commentaire :", payload);
+
+  try {
+    setLoading(true);
+    console.log("⏳ Appel apiCreateCommentaire...");
+
+    const commentaire = await apiCreateCommentaire(payload);
+
+    console.log("✅ Commentaire créé, retour API :", commentaire);
+
+    onCommentaireAdded(commentaire);
+    console.log("✅ Commentaire ajouté à la liste locale");
+
+    setContenu("");
+    console.log("✅ Champ commentaire vidé");
+  } catch (e) {
+    console.log("❌ Erreur création commentaire :", e);
+  } finally {
+    setLoading(false);
+    console.log("🟩 Fin handleCreateCommentaire");
+  }
+}
 
   async function handleCreateReponse() {
-    const currentUser = await getCurrentUser();
+  console.log("🟪 Début handleCreateReponse");
+  console.log("Réponse saisie :", replyContent);
+  console.log("Commentaire auquel on répond :", replyTo);
+  console.log("Ressource actuelle :", ressource);
 
-    if (!currentUser) {
-      router.push("/login");
-      return;
-    }
+  const currentUser = await getCurrentUser();
 
-    if (!replyTo || !replyContent.trim()) return;
+  console.log("Utilisateur courant récupéré :", currentUser);
 
-    try {
-      setLoading(true);
-
-      const commentaire = await apiCreateCommentaire({
-        contenu: replyContent.trim(),
-        utilisateur: currentUser,
-        resource: ressource,
-        commentaireParent: replyTo,
-      });
-
-      onCommentaireAdded(commentaire);
-      setReplyContent("");
-      setReplyTo(null);
-    } catch (e) {
-      console.log("Erreur création réponse :", e);
-    } finally {
-      setLoading(false);
-    }
+  if (!currentUser) {
+    console.log("❌ Aucun utilisateur connecté, redirection login");
+    router.push("/login");
+    return;
   }
+
+  if (!replyTo) {
+    console.log("❌ Aucun commentaire parent sélectionné");
+    return;
+  }
+
+  if (!replyContent.trim()) {
+    console.log("❌ Réponse vide, arrêt");
+    return;
+  }
+
+  const payload = {
+    contenu: replyContent.trim(),
+    utilisateur: currentUser,
+    resource: ressource,
+    commentaireParent: replyTo,
+  };
+
+  console.log("📤 Payload envoyé pour création réponse :", payload);
+
+  try {
+    setLoading(true);
+    console.log("⏳ Appel apiCreateCommentaire pour réponse...");
+
+    const commentaire = await apiCreateCommentaire(payload);
+
+    console.log("✅ Réponse créée, retour API :", commentaire);
+
+    onCommentaireAdded(commentaire);
+    console.log("✅ Réponse ajoutée à la liste locale");
+
+    setReplyContent("");
+    setReplyTo(null);
+    console.log("✅ Formulaire réponse réinitialisé");
+  } catch (e) {
+    console.log("❌ Erreur création réponse :", e);
+  } finally {
+    setLoading(false);
+    console.log("🟩 Fin handleCreateReponse");
+  }
+}
 
   function renderCommentaire(commentaire: Commentaire, isReponse = false) {
     const auteur = commentaire.auteur;
