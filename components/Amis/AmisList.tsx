@@ -1,19 +1,114 @@
+import { API_BASE_URL } from "@/config/api";
+import { getUserId } from "@/config/format";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { apiCreateAmi, apiGetAllAmis, apiGetAllUsers, } from "@/services/amiApi";
+import {
+  apiCreateAmi,
+  apiGetAllAmis,
+  apiGetAllUsers,
+} from "@/services/amiApi";
 import { getCurrentUser } from "@/services/userStorage";
 import { Ami } from "@/types/amis";
-
 import { UserAPI } from "@/types/API/usersAPI";
 import { User } from "@/types/users";
 import { useEffect, useState } from "react";
-import { Alert, Image, Pressable, ScrollView, Text, View, } from "react-native";
+import {
+  Alert,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 import AmisEmpty from "./AmisEmpty";
 import AmisListHeader from "./AmisListHeader";
 import AmisLoading from "./AmisLoading";
 import AmisNoUser from "./AmisNoUser";
 import { makeAmisStyles } from "./module.AmisList.style";
+
+// En attendant une vraie API, tu peux remettre ces mocks si besoin.
+
+// const mockUsers: UserAPI[] = [
+//   {
+//     id: 1,
+//     pseudo: "alice",
+//     prenom: "Alice",
+//     nom: "Dupont",
+//     email: "alice@example.com",
+//     telephone: "0600000001",
+//     statusCompte: true,
+//     dateCreation: "",
+//     photo_profil: null,
+//   },
+// ];
+
+// const mockAmis: Ami[] = [
+//   {
+//     id: 1,
+//     statut: "accepte",
+//     dateAction: "2026-05-22T10:00:00.000Z",
+//     demandeur: mockUsers[0],
+//     ami: mockUsers[1],
+//   },
+// ];
+
+function normalizeArrayResponse<T>(response: any): T[] {
+  if (Array.isArray(response)) {
+    return response;
+  }
+
+  if (Array.isArray(response?.data)) {
+    return response.data;
+  }
+
+  if (Array.isArray(response?.member)) {
+    return response.member;
+  }
+
+  if (Array.isArray(response?.["hydra:member"])) {
+    return response["hydra:member"];
+  }
+
+  return [];
+}
+
+function buildImageUrl(path: string | null | undefined) {
+  if (!path) {
+    return null;
+  }
+
+  if (path.startsWith("http") || path.startsWith("file://")) {
+    return path;
+  }
+
+  const backendBaseUrl = API_BASE_URL.replace(/\/api\/?$/, "").replace(
+    /\/$/,
+    ""
+  );
+
+  const formattedPath = path.startsWith("/") ? path : `/${path}`;
+
+  return `${backendBaseUrl}${formattedPath}`;
+}
+
+function isAlreadyFriend(
+  userId: number,
+  relations: Ami[],
+  connectedUserId: number
+) {
+  return relations.some((relation) => {
+    const demandeurId = getUserId(relation.demandeur);
+    const amiId = getUserId(relation.ami);
+
+    const currentToUser = demandeurId === connectedUserId && amiId === userId;
+
+    const userToCurrent = demandeurId === userId && amiId === connectedUserId;
+
+    return currentToUser || userToCurrent;
+  });
+}
 
 export default function AmisList() {
   const scheme = useColorScheme() ?? "dark";
@@ -30,46 +125,6 @@ export default function AmisList() {
     loadData();
   }, []);
 
-  function getUserId(value: any): number | null {
-    if (!value) return null;
-
-    if (typeof value === "number") return value;
-
-    if (typeof value === "object" && value.id_utilisateur) {
-      return Number(value.id_utilisateur);
-    }
-
-    if (typeof value === "object" && value.id) {
-      return Number(value.id);
-    }
-
-    if (typeof value === "string") {
-      const parts = value.split("/");
-      const lastPart = parts[parts.length - 1];
-      const id = Number(lastPart);
-
-      return Number.isNaN(id) ? null : id;
-    }
-
-    return null;
-  }
-
-  function isAlreadyFriend(
-    userId: number,
-    relations: Ami[],
-    connectedUserId: number
-  ) {
-    return relations.some((relation) => {
-      const demandeurId = getUserId(relation.demandeur);
-      const amiId = getUserId(relation.ami);
-
-      return (
-        (demandeurId === connectedUserId && amiId === userId) ||
-        (demandeurId === userId && amiId === connectedUserId)
-      );
-    });
-  }
-
   async function loadData() {
     try {
       setLoading(true);
@@ -79,34 +134,41 @@ export default function AmisList() {
       if (!connectedUser) {
         setCurrentUser(null);
         setUsers([]);
+        setAmis([]);
         return;
       }
 
       setCurrentUser(connectedUser);
 
-      const usersResponse: any = await apiGetAllUsers();
-
-      const allUsers: UserAPI[] = Array.isArray(usersResponse)
-        ? usersResponse
-        : usersResponse.member ?? [];
-
-      const amisResponse = await apiGetAllAmis();
-
-      const allAmis = amisResponse.member ?? [];
-
-      setAmis(allAmis);
-
       const connectedUserId = getUserId(connectedUser);
 
       if (!connectedUserId) {
         setUsers([]);
+        setAmis([]);
         return;
       }
+
+      const usersResponse = await apiGetAllUsers();
+
+      const allUsers = normalizeArrayResponse<UserAPI>(usersResponse);
+
+      const amisResponse = await apiGetAllAmis();
+
+      const allAmis = normalizeArrayResponse<Ami>(amisResponse);
+
+      setAmis(allAmis);
+
+      // Version mock à remettre si besoin pour tester sans API.
+      // const allUsers = mockUsers;
+      // const allAmis = mockAmis;
+      // setAmis(mockAmis);
 
       const filteredUsers = allUsers.filter((user) => {
         const userId = getUserId(user);
 
-        if (!userId) return false;
+        if (!userId) {
+          return false;
+        }
 
         const isNotCurrentUser = userId !== connectedUserId;
 
@@ -121,7 +183,7 @@ export default function AmisList() {
 
       setUsers(filteredUsers);
     } catch (error) {
-      console.error(error);
+      console.error("Erreur chargement amis :", error);
 
       Alert.alert(
         "Erreur",
@@ -133,54 +195,46 @@ export default function AmisList() {
   }
 
   async function handleAddFriend(friendUserId: number) {
-  const connectedUserId = getUserId(currentUser);
+    const connectedUserId = getUserId(currentUser);
 
-  console.log("currentUser", currentUser);
-  console.log("connectedUserId", connectedUserId);
-  console.log("friendUserId", friendUserId);
+    if (!connectedUserId) {
+      Alert.alert("Erreur", "Impossible de récupérer l'utilisateur connecté.");
+      return;
+    }
 
-  if (!connectedUserId) {
-    Alert.alert("Erreur", "Impossible de récupérer l'utilisateur connecté.");
-    return;
+    if (!friendUserId) {
+      Alert.alert("Erreur", "Impossible de récupérer l'utilisateur à ajouter.");
+      return;
+    }
+
+    const payload = {
+      statut: "AMI",
+      dateAction: new Date().toISOString(),
+      demandeur: connectedUserId,
+      ami: friendUserId,
+    };
+
+    try {
+      setAddingIds((prev) => [...prev, friendUserId]);
+
+      await apiCreateAmi(payload);
+
+      setUsers((prev) =>
+        prev.filter((user) => getUserId(user) !== friendUserId)
+      );
+
+      Alert.alert("Ami ajouté", "L'utilisateur a bien été ajouté à tes amis.");
+    } catch (error) {
+      console.error("Erreur création ami :", error);
+
+      Alert.alert(
+        "Erreur",
+        "Impossible d'ajouter cet utilisateur en ami pour le moment."
+      );
+    } finally {
+      setAddingIds((prev) => prev.filter((id) => id !== friendUserId));
+    }
   }
-
-  if (!friendUserId) {
-    Alert.alert("Erreur", "Impossible de récupérer l'utilisateur à ajouter.");
-    return;
-  }
-
-  const payload = {
-    statut: "AMI",
-    dateAction: new Date().toISOString(),
-    demandeur: `/api/utilisateurs/${connectedUserId}`,
-    ami: `/api/utilisateurs/${friendUserId}`,
-  };
-
-  console.log("payload envoyé à apiCreateAmi", payload);
-
-  try {
-    setAddingIds((prev) => [...prev, friendUserId]);
-
-    const response = await apiCreateAmi(payload);
-
-    console.log("response apiCreateAmi", response);
-
-    setUsers((prev) =>
-      prev.filter((user) => getUserId(user) !== friendUserId)
-    );
-
-    Alert.alert("Ami ajouté", "L'utilisateur a bien été ajouté à tes amis.");
-  } catch (error) {
-    console.error("Erreur création ami", error);
-
-    Alert.alert(
-      "Erreur",
-      "Impossible d'ajouter cet utilisateur en ami pour le moment."
-    );
-  } finally {
-    setAddingIds((prev) => prev.filter((id) => id !== friendUserId));
-  }
-}
 
   if (loading) {
     return <AmisLoading styles={styles} />;
@@ -196,25 +250,26 @@ export default function AmisList() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-       <AmisListHeader styles={styles}/>
+        <AmisListHeader styles={styles} />
 
         {users.length === 0 ? (
-          <AmisEmpty styles={styles}/>
+          <AmisEmpty styles={styles} />
         ) : (
           users.map((user) => {
             const userId = getUserId(user);
 
-            if (!userId) return null;
+            if (!userId) {
+              return null;
+            }
 
             const isAdding = addingIds.includes(userId);
 
+            const photoUrl = buildImageUrl(user.photo_profil);
+
             return (
               <View key={userId} style={styles.userCard}>
-                {user.photo_profil ? (
-                  <Image
-                    source={{ uri: user.photo_profil }}
-                    style={styles.avatar}
-                  />
+                {photoUrl ? (
+                  <Image source={{ uri: photoUrl }} style={styles.avatar} />
                 ) : (
                   <View style={styles.avatarPlaceholder}>
                     <Text style={styles.avatarText}>
@@ -238,8 +293,8 @@ export default function AmisList() {
                   disabled={isAdding}
                   style={({ pressed }) => [
                     styles.addButton,
-                    pressed && styles.buttonPressed,
-                    isAdding && styles.disabledButton,
+                    pressed ? styles.buttonPressed : null,
+                    isAdding ? styles.disabledButton : null,
                   ]}
                 >
                   <Text style={styles.addButtonText}>

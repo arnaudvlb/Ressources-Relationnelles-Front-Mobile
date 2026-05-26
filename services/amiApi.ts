@@ -1,6 +1,6 @@
 
 import { Ami } from "@/types/amis";
-import { User } from "@/types/users";
+import { UserAPI } from "@/types/API/usersAPI";
 import { httpRequest } from "./httpClient";
 
 
@@ -18,12 +18,12 @@ export type AmiResponse = {
 export type CreateAmiPayload = {
   statut: string;
   dateAction: string;
-  demandeur: string;
-  ami: string;
+  demandeur: number;
+  ami: number;
 };
 
 export type UsersResponse = {
-  member: User[];
+  member: UserAPI[];
   totalItems?: number;
   "@context"?: string;
   "@id"?: string;
@@ -50,16 +50,12 @@ export async function apiGetAmiById(id: number): Promise<AmiResponse> {
 }
 
 
-export type CreateAmiResponse = {
-  message: string;
-};
-
 export async function apiCreateAmi(
   payload: CreateAmiPayload
-): Promise<CreateAmiResponse> {
+): Promise<AmiResponse> {
   console.log("apiCreateAmi payload", payload);
 
-  const response = await httpRequest<CreateAmiResponse>({
+  const response = await httpRequest<AmiResponse>({
     method: "POST",
     path: "/amis",
     auth: true,

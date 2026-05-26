@@ -1,8 +1,9 @@
+import { API_BASE_URL } from "@/config/api";
 import { formatDate, getUserId } from "@/config/format";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-// import { apiGetAmis } from "@/services/amiApi";
-// import { apiGetAllMessages } from "@/services/messageApi";
+
+import { apiGetAllMessages } from "@/services/messageApi";
 import { getCurrentUser } from "@/services/userStorage";
 import { Ami } from "@/types/amis";
 import { UserAPI } from "@/types/API/usersAPI";
@@ -19,6 +20,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { apiGetAllAmis } from '@/services/amiApi';
 import MessageListEmpty from "./MessageListEmpty";
 import MessgaeListHeader from "./MessageListHeader";
 import MessageListLoading from "./MessageListLoading";
@@ -30,104 +33,144 @@ type Conversation = {
   lastMessage: Message | null;
 };
 
-// En attendant une vraie API
-const mockUsers: UserAPI[] = [
-  {
-    id: 1,
-    pseudo: "alice",
-    prenom: "Alice",
-    nom: "Dupont",
-    email: "alice@example.com",
-    telephone: "0600000001",
-    statusCompte: true,
-    dateCreation: "",
-    photo_profil: null,
-  },
-  {
-    id: 2,
-    pseudo: "leo",
-    prenom: "Léo",
-    nom: "Martin",
-    email: "leo@example.com",
-    telephone: "0600000002",
-    statusCompte: true,
-    dateCreation: "",
-    photo_profil: null,
-  },
-  {
-    id: 3,
-    pseudo: "emma",
-    prenom: "Emma",
-    nom: "Bernard",
-    email: "emma@example.com",
-    telephone: "0600000003",
-    statusCompte: true,
-    dateCreation: "",
-    photo_profil: null,
-  },
-  {
-    id: 4,
-    pseudo: "nina",
-    prenom: "Nina",
-    nom: "Petit",
-    email: "nina@example.com",
-    telephone: "0600000004",
-    statusCompte: true,
-    dateCreation: "",
-    photo_profil: null,
-  },
-];
+// En attendant une vraie API, tu peux remettre ces mocks si besoin.
 
-const mockAmis: Ami[] = [
-  {
-    id: 1,
-    statut: "accepte",
-    dateAction: "2026-05-22T10:00:00.000Z",
-    demandeur: mockUsers[0],
-    ami: mockUsers[1],
-  },
-  {
-    id: 2,
-    statut: "accepte",
-    dateAction: "2026-05-22T11:00:00.000Z",
-    demandeur: mockUsers[2],
-    ami: mockUsers[0],
-  },
-  {
-    id: 3,
-    statut: "accepte",
-    dateAction: "2026-05-22T12:00:00.000Z",
-    demandeur: mockUsers[0],
-    ami: mockUsers[3],
-  },
-];
+// const mockUsers: UserAPI[] = [
+//   {
+//     id: 1,
+//     pseudo: "alice",
+//     prenom: "Alice",
+//     nom: "Dupont",
+//     email: "alice@example.com",
+//     telephone: "0600000001",
+//     statusCompte: true,
+//     dateCreation: "",
+//     photo_profil: null,
+//   },
+//   {
+//     id: 2,
+//     pseudo: "leo",
+//     prenom: "Léo",
+//     nom: "Martin",
+//     email: "leo@example.com",
+//     telephone: "0600000002",
+//     statusCompte: true,
+//     dateCreation: "",
+//     photo_profil: null,
+//   },
+//   {
+//     id: 3,
+//     pseudo: "emma",
+//     prenom: "Emma",
+//     nom: "Bernard",
+//     email: "emma@example.com",
+//     telephone: "0600000003",
+//     statusCompte: true,
+//     dateCreation: "",
+//     photo_profil: null,
+//   },
+//   {
+//     id: 4,
+//     pseudo: "nina",
+//     prenom: "Nina",
+//     nom: "Petit",
+//     email: "nina@example.com",
+//     telephone: "0600000004",
+//     statusCompte: true,
+//     dateCreation: "",
+//     photo_profil: null,
+//   },
+// ];
 
-const mockMessages: Message[] = [
-  {
-    id: 1,
-    contenu: "Coucou, merci pour la ressource, elle m’a bien aidé !",
-    pieceJointe: null,
-    dateEnvoi: "2026-05-22T14:15:00.000Z",
-    expediteur: mockUsers[1],
-    destinataire: mockUsers[0],
-  },
-  {
-    id: 2,
-    contenu: "Avec plaisir, contente que ça t’ait été utile.",
-    pieceJointe: null,
-    dateEnvoi: "2026-05-22T14:20:00.000Z",
-    expediteur: mockUsers[0],
-    destinataire: mockUsers[1],
-  },
-  {
-    id: 3,
-    contenu: "Tu aurais une ressource sur la communication en famille ?",
-    pieceJointe: null,
-    dateEnvoi: "2026-05-22T15:05:00.000Z",
-    expediteur: mockUsers[2],
-    destinataire: mockUsers[0],
-  },
-];
+// const mockAmis: Ami[] = [
+//   {
+//     id: 1,
+//     statut: "accepte",
+//     dateAction: "2026-05-22T10:00:00.000Z",
+//     demandeur: mockUsers[0],
+//     ami: mockUsers[1],
+//   },
+//   {
+//     id: 2,
+//     statut: "accepte",
+//     dateAction: "2026-05-22T11:00:00.000Z",
+//     demandeur: mockUsers[2],
+//     ami: mockUsers[0],
+//   },
+//   {
+//     id: 3,
+//     statut: "accepte",
+//     dateAction: "2026-05-22T12:00:00.000Z",
+//     demandeur: mockUsers[0],
+//     ami: mockUsers[3],
+//   },
+// ];
+
+// const mockMessages: Message[] = [
+//   {
+//     id: 1,
+//     contenu: "Coucou, merci pour la ressource, elle m’a bien aidé !",
+//     pieceJointe: null,
+//     dateEnvoi: "2026-05-22T14:15:00.000Z",
+//     expediteur: mockUsers[1],
+//     destinataire: mockUsers[0],
+//   },
+//   {
+//     id: 2,
+//     contenu: "Avec plaisir, contente que ça t’ait été utile.",
+//     pieceJointe: null,
+//     dateEnvoi: "2026-05-22T14:20:00.000Z",
+//     expediteur: mockUsers[0],
+//     destinataire: mockUsers[1],
+//   },
+//   {
+//     id: 3,
+//     contenu: "Tu aurais une ressource sur la communication en famille ?",
+//     pieceJointe: null,
+//     dateEnvoi: "2026-05-22T15:05:00.000Z",
+//     expediteur: mockUsers[2],
+//     destinataire: mockUsers[0],
+//   },
+// ];
+
+function normalizeArrayResponse<T>(response: any): T[] {
+  if (Array.isArray(response)) {
+    return response;
+  }
+
+  if (Array.isArray(response.data)) {
+    return response.data;
+  }
+
+  if (Array.isArray(response.member)) {
+    return response.member;
+  }
+
+  if (Array.isArray(response["hydra:member"])) {
+    return response["hydra:member"];
+  }
+
+  return [];
+}
+
+function buildImageUrl(path: string | null | undefined) {
+  if (!path) {
+    return null;
+  }
+
+  if (path.startsWith("http") || path.startsWith("file://")) {
+    return path;
+  }
+
+  const backendBaseUrl = API_BASE_URL.replace(/\/api\/?$/, "").replace(
+    /\/$/,
+    ""
+  );
+
+  const formattedPath = path.startsWith("/") ? path : `/${path}`;
+
+  return `${backendBaseUrl}${formattedPath}`;
+}
 
 export default function MessageList() {
   const scheme = useColorScheme() ?? "dark";
@@ -149,8 +192,6 @@ export default function MessageList() {
 
       const connectedUser = await getCurrentUser();
 
-      console.log(" Utilisateur connecté :", connectedUser);
-
       if (!connectedUser) {
         setCurrentUser(null);
         setAmis([]);
@@ -160,30 +201,20 @@ export default function MessageList() {
 
       setCurrentUser(connectedUser);
 
-      /*
-        À réactiver quand tes API seront prêtes :
+      const amisResponse = await apiGetAllAmis();
+      const allAmis = normalizeArrayResponse<Ami>(amisResponse);
 
-        const amisResponse = await apiGetAmis();
+      const messagesResponse = await apiGetAllMessages();
+      const allMessages = normalizeArrayResponse<Message>(messagesResponse);
 
-        const allAmis = Array.isArray(amisResponse)
-          ? amisResponse
-          : amisResponse.member ?? [];
+      setAmis(allAmis);
+      setMessages(allMessages);
 
-        setAmis(allAmis);
-
-        const messagesResponse = await apiGetAllMessages();
-
-        const allMessages = Array.isArray(messagesResponse)
-          ? messagesResponse
-          : messagesResponse.member ?? [];
-
-        setMessages(allMessages);
-      */
-
-      setAmis(mockAmis);
-      setMessages(mockMessages);
+      // Version mock à remettre si besoin pour tester sans API.
+      // setAmis(mockAmis);
+      // setMessages(mockMessages);
     } catch (error) {
-      console.error(" Erreur chargement messagerie :", error);
+      console.error("Erreur chargement messagerie :", error);
 
       Alert.alert(
         "Erreur",
@@ -197,46 +228,43 @@ export default function MessageList() {
   const conversations = useMemo(() => {
     const currentUserId = getUserId(currentUser);
 
-    console.log(" ID utilisateur courant :", currentUserId);
-    console.log(" Amis récupérés :", amis);
-    console.log(" Messages récupérés :", messages);
+    if (!currentUserId) {
+      return [];
+    }
 
-    if (!currentUserId) return [];
-
-    //Evolution avec le type d'amitie possible 
-    const amisAcceptes = amis;
+    const amisAcceptes = amis.filter((relation) => {
+      return relation.statut === "accepte";
+    });
 
     const conversationsList = amisAcceptes
       .map((relation): Conversation | null => {
-        const demandeurId = relation.demandeur?.id;
-        const amiId = relation.ami?.id;
+        const demandeurId = getUserId(relation.demandeur);
+        const amiId = getUserId(relation.ami);
 
         if (!demandeurId || !amiId) {
-          console.log(" Relation ami invalide :", relation);
           return null;
         }
 
         const friendUser =
           demandeurId === currentUserId ? relation.ami : relation.demandeur;
 
-        if (!friendUser?.id) {
-          console.log(" Ami introuvable dans la relation :", relation);
+        const friendUserId = getUserId(friendUser);
+
+        if (!friendUser || !friendUserId) {
           return null;
         }
 
         const messagesWithFriend = messages.filter((message) => {
-          const expediteur = message.expediteur as UserAPI;
-          const destinataire = message.destinataire as UserAPI;
+          const expediteurId = getUserId(message.expediteur);
+          const destinataireId = getUserId(message.destinataire);
 
-          const expediteurId = expediteur?.id;
-          const destinataireId = destinataire?.id;
+          const currentToFriend =
+            expediteurId === currentUserId && destinataireId === friendUserId;
 
-          return (
-            (expediteurId === currentUserId &&
-              destinataireId === friendUser.id) ||
-            (expediteurId === friendUser.id &&
-              destinataireId === currentUserId)
-          );
+          const friendToCurrent =
+            expediteurId === friendUserId && destinataireId === currentUserId;
+
+          return currentToFriend || friendToCurrent;
         });
 
         const sortedMessages = [...messagesWithFriend].sort((a, b) => {
@@ -249,7 +277,7 @@ export default function MessageList() {
         const lastMessage = sortedMessages[0] ?? null;
 
         return {
-          user: friendUser,
+          user: friendUser as UserAPI,
           lastMessage,
         };
       })
@@ -291,17 +319,20 @@ export default function MessageList() {
         ) : (
           conversations.map((conversation) => {
             const user = conversation.user;
-            const userId = user.id;
+            const userId = getUserId(user);
             const lastMessage = conversation.lastMessage;
+            const photoUrl = buildImageUrl(user.photo_profil);
 
-            if (!userId) return null;
+            if (!userId) {
+              return null;
+            }
 
             return (
               <Pressable
                 key={userId}
                 style={({ pressed }) => [
                   styles.conversationCard,
-                  pressed && styles.cardPressed,
+                  pressed ? styles.cardPressed : null,
                 ]}
                 onPress={() =>
                   router.push({
@@ -310,11 +341,8 @@ export default function MessageList() {
                   })
                 }
               >
-                {user.photo_profil ? (
-                  <Image
-                    source={{ uri: user.photo_profil }}
-                    style={styles.avatar}
-                  />
+                {photoUrl ? (
+                  <Image source={{ uri: photoUrl }} style={styles.avatar} />
                 ) : (
                   <View style={styles.avatarPlaceholder}>
                     <Text style={styles.avatarText}>
