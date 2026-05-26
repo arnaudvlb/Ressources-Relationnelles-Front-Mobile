@@ -1,14 +1,23 @@
+import { formatDate, getUserId } from "@/config/format";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+// import { apiGetAmis } from "@/services/amiApi";
 // import { apiGetAllMessages } from "@/services/messageApi";
-import { formatDate } from "@/config/format";
 import { getCurrentUser } from "@/services/userStorage";
+import { Ami } from "@/types/amis";
 import { UserAPI } from "@/types/API/usersAPI";
 import { Message } from "@/types/messages";
 import { User } from "@/types/users";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Alert, Image, Pressable, ScrollView, Text, View, } from "react-native";
+import {
+  Alert,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MessageListEmpty from "./MessageListEmpty";
 import MessgaeListHeader from "./MessageListHeader";
@@ -16,14 +25,12 @@ import MessageListLoading from "./MessageListLoading";
 import MessageListNoUser from "./MessageListNoUser";
 import { makeMessagerieStyles } from "./module.MessageList.styles";
 
-
 type Conversation = {
   user: UserAPI;
-  lastMessage: Message;
+  lastMessage: Message | null;
 };
 
-
-//En attendant une api sans iri
+// En attendant une vraie API
 const mockUsers: UserAPI[] = [
   {
     id: 1,
@@ -32,10 +39,9 @@ const mockUsers: UserAPI[] = [
     nom: "Dupont",
     email: "alice@example.com",
     telephone: "0600000001",
-    statusCompte :true,
-    dateCreation:"",
-    photo_profil:null,
-
+    statusCompte: true,
+    dateCreation: "",
+    photo_profil: null,
   },
   {
     id: 2,
@@ -44,9 +50,9 @@ const mockUsers: UserAPI[] = [
     nom: "Martin",
     email: "leo@example.com",
     telephone: "0600000002",
-    statusCompte :true,
-    dateCreation:"",
-    photo_profil:null,
+    statusCompte: true,
+    dateCreation: "",
+    photo_profil: null,
   },
   {
     id: 3,
@@ -55,9 +61,44 @@ const mockUsers: UserAPI[] = [
     nom: "Bernard",
     email: "emma@example.com",
     telephone: "0600000003",
-    statusCompte :true,
-    dateCreation:"",
-    photo_profil:null,
+    statusCompte: true,
+    dateCreation: "",
+    photo_profil: null,
+  },
+  {
+    id: 4,
+    pseudo: "nina",
+    prenom: "Nina",
+    nom: "Petit",
+    email: "nina@example.com",
+    telephone: "0600000004",
+    statusCompte: true,
+    dateCreation: "",
+    photo_profil: null,
+  },
+];
+
+const mockAmis: Ami[] = [
+  {
+    id: 1,
+    statut: "accepte",
+    dateAction: "2026-05-22T10:00:00.000Z",
+    demandeur: mockUsers[0],
+    ami: mockUsers[1],
+  },
+  {
+    id: 2,
+    statut: "accepte",
+    dateAction: "2026-05-22T11:00:00.000Z",
+    demandeur: mockUsers[2],
+    ami: mockUsers[0],
+  },
+  {
+    id: 3,
+    statut: "accepte",
+    dateAction: "2026-05-22T12:00:00.000Z",
+    demandeur: mockUsers[0],
+    ami: mockUsers[3],
   },
 ];
 
@@ -94,6 +135,7 @@ export default function MessageList() {
   const styles = makeMessagerieStyles(colors);
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [amis, setAmis] = useState<Ami[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -101,37 +143,47 @@ export default function MessageList() {
     loadData();
   }, []);
 
-
-
   async function loadData() {
     try {
-
       setLoading(true);
 
       const connectedUser = await getCurrentUser();
 
+      console.log(" Utilisateur connecté :", connectedUser);
+
       if (!connectedUser) {
         setCurrentUser(null);
+        setAmis([]);
         setMessages([]);
         return;
       }
 
       setCurrentUser(connectedUser);
 
-      //section api a reactivé une fois la correction effectué 
       /*
-      const messagesResponse = await apiGetAllMessages();
+        À réactiver quand tes API seront prêtes :
 
-      const allMessages = Array.isArray(messagesResponse)
-        ? messagesResponse
-        : messagesResponse.member ?? [];
+        const amisResponse = await apiGetAmis();
 
-      setMessages(allMessages);
+        const allAmis = Array.isArray(amisResponse)
+          ? amisResponse
+          : amisResponse.member ?? [];
+
+        setAmis(allAmis);
+
+        const messagesResponse = await apiGetAllMessages();
+
+        const allMessages = Array.isArray(messagesResponse)
+          ? messagesResponse
+          : messagesResponse.member ?? [];
+
+        setMessages(allMessages);
       */
 
+      setAmis(mockAmis);
       setMessages(mockMessages);
     } catch (error) {
-      console.error(error);
+      console.error(" Erreur chargement messagerie :", error);
 
       Alert.alert(
         "Erreur",
@@ -143,68 +195,87 @@ export default function MessageList() {
   }
 
   const conversations = useMemo(() => {
-    const currentUserId = currentUser?.id ?? currentUser?.id_utilisateur;
+    const currentUserId = getUserId(currentUser);
+
+    console.log(" ID utilisateur courant :", currentUserId);
+    console.log(" Amis récupérés :", amis);
+    console.log(" Messages récupérés :", messages);
 
     if (!currentUserId) return [];
 
-    const map = new Map<number, Conversation>();
+    //Evolution avec le type d'amitie possible 
+    const amisAcceptes = amis;
 
-    messages.forEach((message) => {
-      const expediteur = message.expediteur as UserAPI;
-      const destinataire = message.destinataire as UserAPI;
+    const conversationsList = amisAcceptes
+      .map((relation): Conversation | null => {
+        const demandeurId = relation.demandeur?.id;
+        const amiId = relation.ami?.id;
 
-      
+        if (!demandeurId || !amiId) {
+          console.log(" Relation ami invalide :", relation);
+          return null;
+        }
 
-      const expediteurId = expediteur.id;
-      const destinataireId = destinataire.id;
+        const friendUser =
+          demandeurId === currentUserId ? relation.ami : relation.demandeur;
 
-      if (!expediteurId || !destinataireId) return;
+        if (!friendUser?.id) {
+          console.log(" Ami introuvable dans la relation :", relation);
+          return null;
+        }
 
-      const isExpediteur = expediteurId === currentUserId;
-      const isDestinataire = destinataireId === currentUserId;
+        const messagesWithFriend = messages.filter((message) => {
+          const expediteur = message.expediteur as UserAPI;
+          const destinataire = message.destinataire as UserAPI;
 
-      if (!isExpediteur && !isDestinataire) return;
+          const expediteurId = expediteur?.id;
+          const destinataireId = destinataire?.id;
 
-      const otherUser = isExpediteur ? destinataire : expediteur;
-      const otherUserId = otherUser.id;
+          return (
+            (expediteurId === currentUserId &&
+              destinataireId === friendUser.id) ||
+            (expediteurId === friendUser.id &&
+              destinataireId === currentUserId)
+          );
+        });
 
-      if (!otherUserId) return;
+        const sortedMessages = [...messagesWithFriend].sort((a, b) => {
+          const dateA = new Date(a.dateEnvoi).getTime();
+          const dateB = new Date(b.dateEnvoi).getTime();
 
-      const existingConversation = map.get(otherUserId);
+          return dateB - dateA;
+        });
 
-      const currentMessageDate = new Date(message.dateEnvoi).getTime();
+        const lastMessage = sortedMessages[0] ?? null;
 
-      const existingMessageDate = existingConversation
-        ? new Date(existingConversation.lastMessage.dateEnvoi).getTime()
+        return {
+          user: friendUser,
+          lastMessage,
+        };
+      })
+      .filter((conversation): conversation is Conversation => {
+        return conversation !== null;
+      });
+
+    return conversationsList.sort((a, b) => {
+      const dateA = a.lastMessage
+        ? new Date(a.lastMessage.dateEnvoi).getTime()
         : 0;
 
-
-      if (!existingConversation || currentMessageDate > existingMessageDate) {
-        map.set(otherUserId, {
-          user: otherUser,
-          lastMessage: message,
-        });
-      }
-    });
-
-    return Array.from(map.values()).sort((a, b) => {
-      const dateA = new Date(a.lastMessage.dateEnvoi).getTime();
-      const dateB = new Date(b.lastMessage.dateEnvoi).getTime();
+      const dateB = b.lastMessage
+        ? new Date(b.lastMessage.dateEnvoi).getTime()
+        : 0;
 
       return dateB - dateA;
     });
-  }, [messages, currentUser]);
+  }, [amis, messages, currentUser]);
 
   if (loading) {
-    return (
-      <MessageListLoading styles={styles}/>
-    );
+    return <MessageListLoading styles={styles} />;
   }
 
   if (!currentUser) {
-    return (
-     <MessageListNoUser styles={styles}/>
-    );
+    return <MessageListNoUser styles={styles} />;
   }
 
   return (
@@ -213,15 +284,15 @@ export default function MessageList() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <MessgaeListHeader styles={styles}/>
+        <MessgaeListHeader styles={styles} />
 
         {conversations.length === 0 ? (
-          <MessageListEmpty styles={styles}/>
+          <MessageListEmpty styles={styles} />
         ) : (
-
           conversations.map((conversation) => {
             const user = conversation.user;
             const userId = user.id;
+            const lastMessage = conversation.lastMessage;
 
             if (!userId) return null;
 
@@ -257,7 +328,7 @@ export default function MessageList() {
                     <Text style={styles.pseudo}>@{user.pseudo}</Text>
 
                     <Text style={styles.date}>
-                      {formatDate(conversation.lastMessage.dateEnvoi)}
+                      {lastMessage ? formatDate(lastMessage.dateEnvoi) : ""}
                     </Text>
                   </View>
 
@@ -268,7 +339,9 @@ export default function MessageList() {
                   </Text>
 
                   <Text style={styles.lastMessage} numberOfLines={1}>
-                    {conversation.lastMessage.contenu}
+                    {lastMessage
+                      ? lastMessage.contenu
+                      : "Aucun message pour le moment"}
                   </Text>
                 </View>
               </Pressable>

@@ -53,6 +53,17 @@ const mockUsers: UserAPI[] = [
     dateCreation: "",
     photo_profil: null,
   },
+    {
+    id: 4,
+    pseudo: "nina",
+    prenom: "Nina",
+    nom: "Petit",
+    email: "nina@example.com",
+    telephone: "0600000004",
+    statusCompte: true,
+    dateCreation: "",
+    photo_profil: null,
+  },
 ];
 
 const mockMessages: Message[] = [
