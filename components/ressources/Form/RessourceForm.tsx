@@ -5,8 +5,8 @@ import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
 import {
-    apiCreateRessource,
-    apiUpdateRessource,
+  apiCreateRessource,
+  apiUpdateRessource,
 } from "@/services/resourcesApi";
 
 import { mapUsertoUserAPi } from "@/mappers/userMapper";
@@ -148,13 +148,15 @@ export default function RessourceForm({ mode, ressource }: Readonly<Props>) {
       titre: cleanTitre,
       contenu: cleanContenu,
       valide: mode === "edit" ? ressource?.valide ?? false : false,
-      estVisible,
-      dateCreation: ressource?.date_creation ?? new Date().toISOString(),
+      active: estVisible,
+      date_creation: ressource?.date_creation ?? new Date().toISOString(),
       visibilite,
-      utilisateur: UserAPi,
-      categories: `/api/categories/${categorieId}`,
-      tagsRessources: selectedTagIds.map((id) => `/api/tags/${id}`),
-      medias: [],
+
+      utilisateur: userId,
+
+      categorie: `/api/categories/${categorieId}`,
+
+      tags: selectedTagIds.map((id) => `/api/tags/${id}`),
     };
 
     console.log("Payload ressource envoyé :", payload);
@@ -172,7 +174,7 @@ export default function RessourceForm({ mode, ressource }: Readonly<Props>) {
         Alert.alert("Succès", "La ressource a bien été créée.");
       }
 
-      router.push("/ressources");
+      router.replace("/ressources");
     } catch (error: any) {
       console.log("Erreur sauvegarde ressource :", error);
 

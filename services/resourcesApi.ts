@@ -1,6 +1,5 @@
 import { mapRessourceAPItoRessource } from "@/mappers/ressourceMapper";
 import { RessourceAPI } from "@/types/API/ressourcesAPI";
-import { UserAPI } from "@/types/API/usersAPI";
 import { Ressource } from "@/types/ressources";
 import { httpRequest } from "./httpClient";
 
@@ -24,13 +23,12 @@ export type CreateRessourcePayload = {
   titre: string;
   contenu: string;
   valide: boolean;
-  estVisible: boolean;
-  dateCreation: string;
+  active: boolean;
+  date_creation: string;
   visibilite: string;
-  utilisateur: UserAPI;
-  categories: string;
-  tagsRessources: string[];
-  medias: unknown[];
+  utilisateur: number;
+  categorie: string;
+  tags: string[];
 };
 
 export type UpdateRessourcePayload = Partial<CreateRessourcePayload>;
