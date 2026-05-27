@@ -1,11 +1,10 @@
 import { makeResourcesListStyles } from "@/components/ressources/module.RessourcesList.style";
 import { Colors } from "@/constants/theme";
-import { apiListCategories, apiListTags, apiListTypes } from "@/services/FiltresApi";
+import { apiListCategories, apiListTags } from "@/services/FiltresApi";
 import { apiListRessources } from "@/services/resourcesApi";
 import { Categorie } from "@/types/categories";
 import { Ressource } from "@/types/ressources";
 import { Tag } from "@/types/tags";
-import { Type } from "@/types/types";
 import { router } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { FlatList, Pressable, Text, useColorScheme } from "react-native";
@@ -21,7 +20,7 @@ export default function RessourcesListe() {
   const styles = makeResourcesListStyles(colors);
 
   const [ressources, setRessources] = useState<Ressource[]>([]);
-  const [types, setTypes] = useState<Type[]>([]);
+  
   const [categories, setCategories] = useState<Categorie[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
 
@@ -40,13 +39,13 @@ export default function RessourcesListe() {
   const loadFilters = async () => {
     try {
      
-      const [typesList, categoriesList, tagsList] = await Promise.all([
-        apiListTypes(),
+      const [ categoriesList, tagsList] = await Promise.all([
+      
         apiListCategories(),
         apiListTags(),
       ]);
 
-      setTypes(typesList);
+    
       setCategories(categoriesList);
       setTags(tagsList);
 
@@ -163,10 +162,7 @@ export default function RessourcesListe() {
         selectedTypeId={selectedTypeId}
         selectedCategorieId={selectedCategorieId}
         selectedTagIds={selectedTagIds}
-        types={types.map((type) => ({
-          id: String(type.id_type),
-          label: type.libelle ,
-        }))}
+    
         categories={categories.map((categorie) => ({
           id: String(categorie.id ?? categorie.id),
           label: categorie.libelle,

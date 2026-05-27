@@ -232,9 +232,7 @@ export default function MessageList() {
       return [];
     }
 
-    const amisAcceptes = amis.filter((relation) => {
-      return relation.statut === "accepte";
-    });
+    const amisAcceptes = amis
 
     const conversationsList = amisAcceptes
       .map((relation): Conversation | null => {

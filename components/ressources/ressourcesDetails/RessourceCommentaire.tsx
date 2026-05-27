@@ -1,17 +1,11 @@
-
+import { getUserId } from "@/config/format";
 import { apiCreateCommentaire } from "@/services/commentaireApi";
 import { getCurrentUser } from "@/services/userStorage";
 import { Commentaire } from "@/types/commentaires";
 import { Ressource } from "@/types/ressources";
 import { router } from "expo-router";
 import { useState } from "react";
-import {
-  Image,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Image, Pressable, Text, TextInput, View } from "react-native";
 
 type Props = {
   styles: any;
@@ -39,119 +33,116 @@ export default function RessourceComments({
       commentaires?.filter(
         (commentaire) =>
           commentaire.commentaireParent?.id_commentaire ===
-          commentaireParent.id_commentaire
+            commentaireParent.id_commentaire &&
+          commentaire.id_commentaire !== commentaireParent.id_commentaire
       ) ?? []
     );
   }
 
   async function handleCreateCommentaire() {
-  console.log("🟦 Début handleCreateCommentaire");
-  console.log("Contenu saisi :", contenu);
-  console.log("Ressource actuelle :", ressource);
+    const currentUser = await getCurrentUser();
 
-  const currentUser = await getCurrentUser();
+    if (!currentUser) {
+      router.push("/login");
+      return;
+    }
 
-  console.log("Utilisateur courant récupéré :", currentUser);
+    if (!contenu.trim()) {
+      return;
+    }
 
-  if (!currentUser) {
-    console.log("❌ Aucun utilisateur connecté, redirection login");
-    router.push("/login");
-    return;
+     const userId = getUserId(currentUser);
+    const ressourceId = ressource.id_ressource;
+
+    if (!userId || !ressourceId) {
+      console.log("Utilisateur ou ressource invalide :", {
+        userId,
+        ressourceId,
+      });
+
+      return;
+    }
+
+    const payload = {
+      contenu: contenu.trim(),
+      utilisateur: `/api/utilisateurs/${userId}`,
+      resource: `/api/ressources/${ressourceId}`,
+      commentaireParent: null,
+    };
+
+    try {
+      setLoading(true);
+
+      const commentaire = await apiCreateCommentaire(payload);
+
+      onCommentaireAdded(commentaire);
+
+      setContenu("");
+    } catch (e) {
+      console.log("Erreur création commentaire :", e);
+    } finally {
+      setLoading(false);
+    }
   }
-
-  if (!contenu.trim()) {
-    console.log("❌ Commentaire vide, arrêt");
-    return;
-  }
-
-  const payload = {
-    contenu: contenu.trim(),
-    utilisateur: currentUser,
-    resource: ressource,
-    commentaireParent: null,
-  };
-
-  console.log("📤 Payload envoyé pour création commentaire :", payload);
-
-  try {
-    setLoading(true);
-    console.log("⏳ Appel apiCreateCommentaire...");
-
-    const commentaire = await apiCreateCommentaire(payload);
-
-    console.log("✅ Commentaire créé, retour API :", commentaire);
-
-    onCommentaireAdded(commentaire);
-    console.log("✅ Commentaire ajouté à la liste locale");
-
-    setContenu("");
-    console.log("✅ Champ commentaire vidé");
-  } catch (e) {
-    console.log("❌ Erreur création commentaire :", e);
-  } finally {
-    setLoading(false);
-    console.log("🟩 Fin handleCreateCommentaire");
-  }
-}
 
   async function handleCreateReponse() {
-  console.log("🟪 Début handleCreateReponse");
-  console.log("Réponse saisie :", replyContent);
-  console.log("Commentaire auquel on répond :", replyTo);
-  console.log("Ressource actuelle :", ressource);
+    const currentUser = await getCurrentUser();
 
-  const currentUser = await getCurrentUser();
+    if (!currentUser) {
+      router.push("/login");
+      return;
+    }
 
-  console.log("Utilisateur courant récupéré :", currentUser);
+    if (!replyTo) {
+      return;
+    }
 
-  if (!currentUser) {
-    console.log("❌ Aucun utilisateur connecté, redirection login");
-    router.push("/login");
-    return;
+    if (!replyContent.trim()) {
+      return;
+    }
+
+    const userId = getUserId(currentUser);
+    const ressourceId = ressource.id_ressource;
+    const parentId = replyTo.id_commentaire;
+
+    if (!userId || !ressourceId || !parentId) {
+      console.log("Données invalides pour la réponse :", {
+        userId,
+        ressourceId,
+        parentId,
+      });
+
+      return;
+    }
+
+    const payload = {
+      contenu: replyContent.trim(),
+      utilisateur: `/api/utilisateurs/${userId}`,
+      resource: `/api/ressources/${ressourceId}`,
+      commentaireParent: `/api/commentaires/${parentId}`,
+    };
+
+    try {
+      setLoading(true);
+
+      const commentaire = await apiCreateCommentaire(payload);
+
+      onCommentaireAdded(commentaire);
+
+      setReplyContent("");
+      setReplyTo(null);
+    } catch (e) {
+      console.log("Erreur création réponse :", e);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  if (!replyTo) {
-    console.log("❌ Aucun commentaire parent sélectionné");
-    return;
-  }
-
-  if (!replyContent.trim()) {
-    console.log("❌ Réponse vide, arrêt");
-    return;
-  }
-
-  const payload = {
-    contenu: replyContent.trim(),
-    utilisateur: currentUser,
-    resource: ressource,
-    commentaireParent: replyTo,
-  };
-
-  console.log("📤 Payload envoyé pour création réponse :", payload);
-
-  try {
-    setLoading(true);
-    console.log("⏳ Appel apiCreateCommentaire pour réponse...");
-
-    const commentaire = await apiCreateCommentaire(payload);
-
-    console.log("✅ Réponse créée, retour API :", commentaire);
-
-    onCommentaireAdded(commentaire);
-    console.log("✅ Réponse ajoutée à la liste locale");
-
-    setReplyContent("");
-    setReplyTo(null);
-    console.log("✅ Formulaire réponse réinitialisé");
-  } catch (e) {
-    console.log("❌ Erreur création réponse :", e);
-  } finally {
-    setLoading(false);
-    console.log("🟩 Fin handleCreateReponse");
-  }
-}
-
-  function renderCommentaire(commentaire: Commentaire, isReponse = false) {
+  function renderCommentaire(
+    commentaire: Commentaire,
+    isReponse = false,
+    index = 0
+  ) {
     const auteur = commentaire.auteur;
     const pseudo = auteur?.pseudo ?? "Utilisateur inconnu";
     const photoProfil = auteur?.photo_profil;
@@ -162,9 +153,12 @@ export default function RessourceComments({
 
     const reponses = getReponses(commentaire);
 
+    const commentaireKey =
+      commentaire.id_commentaire ?? `${isReponse ? "reponse" : "commentaire"}-${index}`;
+
     return (
       <View
-        key={commentaire.id_commentaire}
+        key={commentaireKey}
         style={[
           styles.commentCard,
           isReponse ? styles.commentReplyCard : null,
@@ -172,10 +166,7 @@ export default function RessourceComments({
       >
         <View style={styles.commentHeader}>
           {photoProfil ? (
-            <Image
-              source={{ uri: photoProfil }}
-              style={styles.commentAvatar}
-            />
+            <Image source={{ uri: photoProfil }} style={styles.commentAvatar} />
           ) : (
             <View style={styles.commentAvatarFallback}>
               <Text style={styles.commentAvatarText}>
@@ -192,7 +183,7 @@ export default function RessourceComments({
 
         <Text style={styles.commentContent}>{commentaire.contenu}</Text>
 
-        {isReponse ? null : (
+        {!isReponse ? (
           <Pressable
             onPress={() => {
               setReplyTo(commentaire);
@@ -201,7 +192,7 @@ export default function RessourceComments({
           >
             <Text style={styles.replyButtonText}>Répondre</Text>
           </Pressable>
-        )}
+        ) : null}
 
         {!isReponse && replyTo?.id_commentaire === commentaire.id_commentaire ? (
           <View style={styles.commentForm}>
@@ -238,9 +229,11 @@ export default function RessourceComments({
           </View>
         ) : null}
 
-        {reponses.length > 0 ? (
+        {!isReponse && reponses.length > 0 ? (
           <View style={styles.repliesContainer}>
-            {reponses.map((reponse) => renderCommentaire(reponse, true))}
+            {reponses.map((reponse, reponseIndex) =>
+              renderCommentaire(reponse, true, reponseIndex)
+            )}
           </View>
         ) : null}
       </View>
@@ -276,11 +269,13 @@ export default function RessourceComments({
         <Text style={styles.empty}>Aucun commentaire pour le moment.</Text>
       ) : (
         <View style={styles.commentsList}>
-          {commentairesPrincipaux.map((commentaire) =>
-            renderCommentaire(commentaire)
+          {commentairesPrincipaux.map((commentaire, index) =>
+            renderCommentaire(commentaire, false, index)
           )}
         </View>
       )}
     </View>
   );
 }
+
+

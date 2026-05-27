@@ -24,83 +24,29 @@ import MessageDetailNoOtherUser from "./MessageDetailNoOtherUsr";
 import MessageDetailNoUser from "./MessageDetailNoUser";
 import { makeConversationStyles } from "./module.MessageDetail";
 
-// const mockUsers: User[] = [
-//   {
-//     id: 1,
-//     pseudo: "alice",
-//     prenom: "Alice",
-//     nom: "Dupont",
-//     email: "alice@example.com",
-//     telephone: "0600000001",
-//     statusCompte: true,
-//     dateCreation: "",
-//     photo_profil: null,
-//   },
-//   {
-//     id: 2,
-//     pseudo: "leo",
-//     prenom: "Léo",
-//     nom: "Martin",
-//     email: "leo@example.com",
-//     telephone: "0600000002",
-//     statusCompte: true,
-//     dateCreation: "",
-//     photo_profil: null,
-//   },
-//   {
-//     id: 3,
-//     pseudo: "emma",
-//     prenom: "Emma",
-//     nom: "Bernard",
-//     email: "emma@example.com",
-//     telephone: "0600000003",
-//     statusCompte: true,
-//     dateCreation: "",
-//     photo_profil: null,
-//   },
-//   {
-//     id: 4,
-//     pseudo: "nina",
-//     prenom: "Nina",
-//     nom: "Petit",
-//     email: "nina@example.com",
-//     telephone: "0600000004",
-//     statusCompte: true,
-//     dateCreation: "",
-//     photo_profil: null,
-//   },
-// ];
-
-// const mockMessages: Message[] = [
-//   {
-//     id: 1,
-//     contenu: "Coucou, merci pour la ressource, elle m’a bien aidé !",
-//     pieceJointe: null,
-//     dateEnvoi: "2026-05-22T14:15:00.000Z",
-//     expediteur: mockUsers[1],
-//     destinataire: mockUsers[0],
-//   },
-//   {
-//     id: 2,
-//     contenu: "Avec plaisir, contente que ça t’ait été utile.",
-//     pieceJointe: null,
-//     dateEnvoi: "2026-05-22T14:20:00.000Z",
-//     expediteur: mockUsers[0],
-//     destinataire: mockUsers[1],
-//   },
-//   {
-//     id: 3,
-//     contenu: "Tu aurais une ressource sur la communication en famille ?",
-//     pieceJointe: null,
-//     dateEnvoi: "2026-05-22T15:05:00.000Z",
-//     expediteur: mockUsers[2],
-//     destinataire: mockUsers[0],
-//   },
-// ];
-
 type Props = {
   userId: string;
 };
+
+function normalizeArrayResponse<T>(response: any): T[] {
+  if (Array.isArray(response)) {
+    return response;
+  }
+
+  if (Array.isArray(response?.data)) {
+    return response.data;
+  }
+
+  if (Array.isArray(response?.member)) {
+    return response.member;
+  }
+
+  if (Array.isArray(response?.["hydra:member"])) {
+    return response["hydra:member"];
+  }
+
+  return [];
+}
 
 export default function MessageDetail({ userId }: Props) {
   const scheme = useColorScheme() ?? "dark";
@@ -118,8 +64,6 @@ export default function MessageDetail({ userId }: Props) {
     loadData();
   }, []);
 
- 
-
   async function loadData() {
     try {
       setLoading(true);
@@ -134,15 +78,12 @@ export default function MessageDetail({ userId }: Props) {
 
       setCurrentUser(connectedUser);
 
-      // Version API.
       const messagesResponse = await apiGetAllMessages();
-      const allMessages =messagesResponse.member;
+      const allMessages = normalizeArrayResponse<Message>(messagesResponse);
 
       setMessages(allMessages);
-
-      // setMessages(mockMessages);
     } catch (error) {
-      console.error(error);
+      console.error("Erreur chargement conversation :", error);
 
       Alert.alert(
         "Erreur",
@@ -160,7 +101,7 @@ export default function MessageDetail({ userId }: Props) {
       return [];
     }
 
-    return messages
+    return (messages ?? [])
       .filter((message) => {
         const expediteurId = getUserId(message.expediteur);
         const destinataireId = getUserId(message.destinataire);
@@ -186,10 +127,7 @@ export default function MessageDetail({ userId }: Props) {
       return null;
     }
 
-    // Version mock à remettre si besoin pour tester sans API.
-    // return mockUsers.find((user) => user.id === otherUserId) ?? null;
-
-    const messageWithOtherUser = messages.find((message) => {
+    const messageWithOtherUser = (messages ?? []).find((message) => {
       const expediteurId = getUserId(message.expediteur);
       const destinataireId = getUserId(message.destinataire);
 
@@ -237,7 +175,7 @@ export default function MessageDetail({ userId }: Props) {
       setMessages((prev) => [...prev, createdMessage]);
       setMessageText("");
     } catch (error) {
-      console.error(error);
+      console.error("Erreur envoi message :", error);
 
       Alert.alert(
         "Erreur",

@@ -15,7 +15,7 @@ type Props = {
   selectedTypeId: string | null;
   selectedCategorieId: string | null;
   selectedTagIds: string[];
-  types: FilterItem[];
+
   categories: FilterItem[];
   tags: FilterItem[];
 
@@ -35,7 +35,7 @@ export default function RessourcesFilters({
   selectedTypeId,
   selectedCategorieId,
   selectedTagIds,
-  types,
+  
   categories,
   tags,
   onSearchChange,
@@ -57,31 +57,7 @@ export default function RessourcesFilters({
 
       <Text style={styles.filterTitle}>Types</Text>
 
-      <View style={styles.filtersRow}>
-        {types.map((type) => {
-          const isActive = selectedTypeId === type.id;
-
-          return (
-            <Pressable
-              key={type.id}
-              style={[
-                styles.filterButton,
-                isActive && styles.filterButtonActive,
-              ]}
-              onPress={() => onTypeChange(isActive ? null : type.id)}
-            >
-              <Text
-                style={[
-                  styles.filterButtonText,
-                  isActive && styles.filterButtonTextActive,
-                ]}
-              >
-                {type.label}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
+      
       <Text style={styles.filterTitle}>Catégories</Text>
 
       <View style={styles.filtersRow}>

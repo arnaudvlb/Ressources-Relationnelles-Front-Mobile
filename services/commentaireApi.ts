@@ -1,13 +1,11 @@
 import { Commentaire } from "@/types/commentaires";
-import { Ressource } from "@/types/ressources";
-import { User } from "@/types/users";
 import { httpRequest } from "./httpClient";
 
 export type CreateCommentairePayload = {
   contenu: string;
-  utilisateur: User;
-  resource: Ressource;
-  commentaireParent?: Commentaire | null;
+  utilisateur: string;
+  resource: string;
+  commentaireParent?: string | null;
 };
 
 export async function apiCreateCommentaire(
