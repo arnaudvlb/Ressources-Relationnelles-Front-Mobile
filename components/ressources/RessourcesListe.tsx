@@ -1,5 +1,7 @@
 import { makeResourcesListStyles } from "@/components/ressources/module.RessourcesList.style";
 import { Colors } from "@/constants/theme";
+
+import { useVisibleRessources } from "@/hooks/use-visibilite-ressources";
 import { apiListCategories, apiListTags } from "@/services/FiltresApi";
 import { apiListRessources } from "@/services/resourcesApi";
 import { Categorie } from "@/types/categories";
@@ -14,52 +16,47 @@ import RessourcesFilters from "./RessourcesFiltres";
 import RessourcesListHeader from "./RessourcesListHeader";
 
 export default function RessourcesListe() {
-
   const scheme = useColorScheme() ?? "dark";
   const colors = Colors[scheme];
   const styles = makeResourcesListStyles(colors);
 
   const [ressources, setRessources] = useState<Ressource[]>([]);
-  
+  const { visibleRessources } = useVisibleRessources(ressources);
+
   const [categories, setCategories] = useState<Categorie[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
 
-  const [statsMap, setStatsMap] = useState<Record<string, { views: number; likesCount: number }> >({});
-
+  const [statsMap, setStatsMap] = useState<
+    Record<string, { views: number; likesCount: number }>
+  >({});
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [search, setSearch] = useState("");
   const [selectedTypeId, setSelectedTypeId] = useState<string | null>(null);
-  const [selectedCategorieId, setSelectedCategorieId] = useState<string | null>(null)
+  const [selectedCategorieId, setSelectedCategorieId] = useState<string | null>(
+    null
+  );
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
-
 
   const loadFilters = async () => {
     try {
-     
-      const [ categoriesList, tagsList] = await Promise.all([
-      
+      const [categoriesList, tagsList] = await Promise.all([
         apiListCategories(),
         apiListTags(),
       ]);
 
-    
       setCategories(categoriesList);
       setTags(tagsList);
-
-    } catch (e : any) {
-      setError(e?.message ??"Erreur lors du chargement des filtres")
-    
-      console.log(" Erreur lors du chargement des filtres :", e);
+    } catch (e: any) {
+      setError(e?.message ?? "Erreur lors du chargement des filtres");
+      console.log("Erreur lors du chargement des filtres :", e);
     }
   };
 
- 
   const loadRessources = useCallback(async () => {
     try {
-
       setLoading(true);
       setError(null);
 
@@ -72,7 +69,6 @@ export default function RessourcesListe() {
 
       setRessources(list);
 
-  
       const map: Record<string, { views: number; likesCount: number }> = {};
 
       list.forEach((r) => {
@@ -82,32 +78,26 @@ export default function RessourcesListe() {
         };
       });
 
-
       setStatsMap(map);
     } catch (e: any) {
-    
       setError(e?.message ?? "Impossible de charger les ressources.");
     } finally {
       setLoading(false);
     }
   }, [search, selectedTypeId, selectedCategorieId, selectedTagIds]);
 
-  
   useEffect(() => {
     loadFilters();
   }, []);
 
   useEffect(() => {
-
     const timeout = setTimeout(() => {
       loadRessources();
     }, 400);
 
-    
     return () => clearTimeout(timeout);
   }, [search, selectedTypeId, selectedCategorieId, selectedTagIds, loadRessources]);
 
- 
   const toggleTag = (id: string) => {
     setSelectedTagIds((currentTags) => {
       if (currentTags.includes(id)) {
@@ -118,7 +108,6 @@ export default function RessourcesListe() {
     });
   };
 
-  
   const resetFilters = () => {
     setSearch("");
     setSelectedTypeId(null);
@@ -126,7 +115,6 @@ export default function RessourcesListe() {
     setSelectedTagIds([]);
   };
 
- 
   function renderItem({ item }: { item: Ressource }) {
     return (
       <RessourceCard
@@ -142,19 +130,19 @@ export default function RessourcesListe() {
 
   return (
     <SafeAreaView style={styles.screen}>
-  
       <RessourcesListHeader
         styles={styles}
         title="Ressources"
         subtitle="Liste des ressources disponibles"
       />
 
-     <Pressable
-      onPress={() => router.push("/ressources/add")}
-      style={styles.addButton}
-    >
-      <Text style={styles.addButtonText}>Ajouter une ressource</Text>
-    </Pressable>
+      <Pressable
+        onPress={() => router.push("/ressources/add")}
+        style={styles.addButton}
+      >
+        <Text style={styles.addButtonText}>Ajouter une ressource</Text>
+      </Pressable>
+
       <RessourcesFilters
         styles={styles}
         colors={colors}
@@ -162,16 +150,14 @@ export default function RessourcesListe() {
         selectedTypeId={selectedTypeId}
         selectedCategorieId={selectedCategorieId}
         selectedTagIds={selectedTagIds}
-    
         categories={categories.map((categorie) => ({
-          id: String(categorie.id ?? categorie.id),
+          id: String(categorie.id),
           label: categorie.libelle,
         }))}
         tags={tags.map((tag) => ({
           id: String(tag.id_tag),
           label: tag.libelle,
         }))}
-        
         onSearchChange={setSearch}
         onTypeChange={setSelectedTypeId}
         onCategorieChange={setSelectedCategorieId}
@@ -183,10 +169,9 @@ export default function RessourcesListe() {
 
       {error && <Text style={styles.empty}>{error}</Text>}
 
-  
       {!loading && !error && (
         <FlatList
-          data={ressources}
+          data={visibleRessources}
           keyExtractor={(item) => String(item.id_ressource)}
           renderItem={renderItem}
           contentContainerStyle={styles.listContent}
