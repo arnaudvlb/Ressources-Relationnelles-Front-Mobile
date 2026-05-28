@@ -340,6 +340,7 @@ export default function RessourceDetail({ id }: Readonly<Props>) {
         canEdit={canEdit}
         ressource={ressource}
         styles={styles}
+        
         />
         <RessourceMedia styles={styles} colors={colors} medias={medias} />
 

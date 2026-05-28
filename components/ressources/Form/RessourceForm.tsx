@@ -4,10 +4,7 @@ import { getUserId } from "@/config/format";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
-import {
-  apiCreateRessource,
-  apiUpdateRessource,
-} from "@/services/resourcesApi";
+import { apiCreateRessource, apiUpdateRessource, } from "@/services/resourcesApi";
 
 import { mapUsertoUserAPi } from "@/mappers/userMapper";
 import { apiListCategories, apiListTags } from "@/services/FiltresApi";
@@ -163,16 +160,22 @@ export default function RessourceForm({ mode, ressource }: Readonly<Props>) {
 
     try {
       setSaving(true);
-
       if (mode === "edit" && ressource?.id_ressource) {
         await apiUpdateRessource(ressource.id_ressource, payload);
 
         Alert.alert("Succès", "La ressource a bien été modifiée.");
-      } else {
-        await apiCreateRessource(payload);
 
-        Alert.alert("Succès", "La ressource a bien été créée.");
+        router.replace({
+          pathname: "/ressources/[id]",
+          params: { id: String(ressource.id_ressource) },
+        });
+
+        return;
       }
+
+      await apiCreateRessource(payload);
+
+      Alert.alert("Succès", "La ressource a bien été créée.");
 
       router.replace("/ressources");
     } catch (error: any) {
