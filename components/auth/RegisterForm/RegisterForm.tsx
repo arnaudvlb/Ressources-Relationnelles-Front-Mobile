@@ -1,7 +1,5 @@
 
 import { apiRegister } from "@/services/authApi";
-import { saveAccessToken } from "@/services/authStorage";
-import { saveCurrentUser } from "@/services/userStorage";
 import { isEmailValid, isPasswordValid } from "@/utils/validators";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
@@ -113,7 +111,7 @@ export default function RegisterForm({styles,colors}:Props){
                 telephone: cleanPhone ? cleanPhone : null,
                 email: cleanEmail,
                 pseudo: cleanPseudo,
-                motDePasse: cleanPassword,
+                password: cleanPassword,
                 photo_profil: avatar,
             };
 
@@ -122,29 +120,11 @@ export default function RegisterForm({styles,colors}:Props){
             const response = await apiRegister(payload);
 
             console.log("Réponse register :", response);
+          
 
-            const token =
-                response?.data?.token ??
-                null;
+            Alert.alert("Compte créé !", "Votre compte a été créé avec succès.");
 
-            const user =
-                response?.data?.user ??
-                null;
-
-            if (!token) {
-                throw new Error("Token non reçu après l'inscription.");
-            }
-
-            if (!user) {
-                throw new Error("Utilisateur non reçu après l'inscription.");
-            }
-
-            await saveAccessToken(token);
-            await saveCurrentUser(user);
-
-            Alert.alert("Compte créé ✅", "Tu es connecté(e) !");
-
-            router.replace("/(tabs)");
+            router.replace("/login");
             } catch (e: any) {
             console.log("Erreur register :", e);
 
