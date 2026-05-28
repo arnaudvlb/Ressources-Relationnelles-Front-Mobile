@@ -1,24 +1,23 @@
-
 import { AppInput } from "@/components/AppInput";
 import { getUserId } from "@/config/format";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-
-import { apiCreateRessource, apiUpdateRessource, } from "@/services/resourcesApi";
-
-import { mapUsertoUserAPi } from "@/mappers/userMapper";
 import { apiListCategories, apiListTags } from "@/services/FiltresApi";
+import {
+  apiCreateRessource,
+  apiUpdateRessource,
+} from "@/services/resourcesApi";
 import { getCurrentUser } from "@/services/userStorage";
 import { Categorie } from "@/types/categories";
 import { Ressource } from "@/types/ressources";
 import { Tag } from "@/types/tags";
+import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
-import { Alert, Pressable, ScrollView, Text, View, } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { makeRessourceFormStyles } from "./module.ressourceForm.styles";
 import RessourcesFormLoading from "./RessourceFormLoading";
-
 
 type Props = {
   mode: "create" | "edit";
@@ -27,12 +26,11 @@ type Props = {
 
 const VISIBILITES = [
   { id: "public", libelle: "Public" },
-  { id: "prive", libelle: "Privé" },
-  { id: "amis", libelle: "Amis uniquement" },
+  { id: "private", libelle: "Privé" },
+  { id: "friend", libelle: "Amis uniquement" },
 ];
 
 export default function RessourceForm({ mode, ressource }: Readonly<Props>) {
-
   const scheme = useColorScheme() ?? "dark";
   const colors = Colors[scheme];
   const styles = makeRessourceFormStyles(colors);
@@ -50,28 +48,57 @@ export default function RessourceForm({ mode, ressource }: Readonly<Props>) {
   const [loadingOptions, setLoadingOptions] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  function resetForm() {
+    setTitre("");
+    setContenu("");
+    setVisibilite("public");
+    setCategorieId(null);
+    setSelectedTagIds([]);
+    setEstVisible(true);
+  }
+
   useEffect(() => {
     loadOptions();
   }, []);
 
   useEffect(() => {
-
     if (mode === "edit" && ressource) {
       setTitre(ressource.titre ?? "");
       setContenu(ressource.contenu ?? "");
       setVisibilite(ressource.visibilite ?? "public");
-      setEstVisible(ressource.active ?? true);
+
+      setEstVisible(
+        ressource.active === true ||
+          (ressource as any).est_visible === true ||
+          (ressource as any).est_visible === 1
+      );
 
       const firstCategorie = Array.isArray(ressource.categorie)
         ? ressource.categorie[0]
         : ressource.categorie;
 
-      setCategorieId(firstCategorie?.id ?? null);
+      setCategorieId(
+        firstCategorie?.id ?? firstCategorie?.id_categorie ?? null
+      );
 
-      const tagIds = ressource.tags?.map((tag: any) => tag.id) ?? [];
+      const tagIds =
+        ressource.tags?.map((tag: any) => tag.id_tag ?? tag.id) ?? [];
+
       setSelectedTagIds(tagIds);
+
+      return;
     }
+
+    resetForm();
   }, [mode, ressource]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (mode === "create") {
+        resetForm();
+      }
+    }, [mode])
+  );
 
   async function loadOptions() {
     try {
@@ -102,8 +129,6 @@ export default function RessourceForm({ mode, ressource }: Readonly<Props>) {
     }
   }
 
-  
-
   function toggleTag(tagId: number) {
     setSelectedTagIds((prev) => {
       if (prev.includes(tagId)) {
@@ -131,28 +156,22 @@ export default function RessourceForm({ mode, ressource }: Readonly<Props>) {
     const currentUser = await getCurrentUser();
     const userId = getUserId(currentUser);
 
-    if (!userId) {
+    if (!currentUser || !userId) {
       Alert.alert("Erreur", "Utilisateur connecté introuvable.");
       return;
     }
 
-    if (!currentUser){
-        Alert.alert("Erreur", "Utilisateur connecté introuvable.");
-      return;
-    }
-    const UserAPi = mapUsertoUserAPi(currentUser)
     const payload = {
       titre: cleanTitre,
       contenu: cleanContenu,
       valide: mode === "edit" ? ressource?.valide ?? false : false,
       active: estVisible,
+      est_visible: estVisible,
       date_creation: ressource?.date_creation ?? new Date().toISOString(),
       visibilite,
 
-      utilisateur: userId,
-
+      utilisateur: `/api/utilisateurs/${userId}`,
       categorie: `/api/categories/${categorieId}`,
-
       tags: selectedTagIds.map((id) => `/api/tags/${id}`),
     };
 
@@ -160,15 +179,13 @@ export default function RessourceForm({ mode, ressource }: Readonly<Props>) {
 
     try {
       setSaving(true);
+
       if (mode === "edit" && ressource?.id_ressource) {
         await apiUpdateRessource(ressource.id_ressource, payload);
 
         Alert.alert("Succès", "La ressource a bien été modifiée.");
 
-        router.replace({
-          pathname: "/ressources/[id]",
-          params: { id: String(ressource.id_ressource) },
-        });
+        router.replace("/ressources");
 
         return;
       }
@@ -176,6 +193,8 @@ export default function RessourceForm({ mode, ressource }: Readonly<Props>) {
       await apiCreateRessource(payload);
 
       Alert.alert("Succès", "La ressource a bien été créée.");
+
+      resetForm();
 
       router.replace("/ressources");
     } catch (error: any) {
@@ -191,12 +210,7 @@ export default function RessourceForm({ mode, ressource }: Readonly<Props>) {
   }
 
   if (loadingOptions) {
-    return (
-     <RessourcesFormLoading 
-     styles={styles}
-     mode={mode}
-     />
-    );
+    return <RessourcesFormLoading styles={styles} mode={mode} />;
   }
 
   return (

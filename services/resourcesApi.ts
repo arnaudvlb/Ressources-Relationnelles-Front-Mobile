@@ -26,7 +26,7 @@ export type CreateRessourcePayload = {
   active: boolean;
   date_creation: string;
   visibilite: string;
-  utilisateur: number;
+  utilisateur: string;
   categorie: string;
   tags: string[];
 };

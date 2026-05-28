@@ -1,11 +1,8 @@
-
 import { getUserId } from "@/config/format";
 import { apiGetAllAmis } from "@/services/amiApi";
 import { getCurrentUser } from "@/services/userStorage";
-import { Ami } from "@/types/amis";
 import { Ressource } from "@/types/ressources";
 import { useEffect, useMemo, useState } from "react";
-
 
 export function useVisibleRessources(ressources: Ressource[]) {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -14,28 +11,53 @@ export function useVisibleRessources(ressources: Ressource[]) {
   useEffect(() => {
     async function loadUserAndFriends() {
       try {
-        const user = await getCurrentUser();
+        const currentUser = await getCurrentUser();
+        const userId = getUserId(currentUser);
 
-        if (getUserId(user)) {
+        if (!userId) {
           return;
         }
 
-        const userId = String(getUserId(user));
-        setCurrentUserId(userId);
+        const currentId = String(userId);
+        setCurrentUserId(currentId);
 
         const amis = await apiGetAllAmis();
 
         const idsAmis = amis.member
-          .map((ami: Ami) => {
-            const userAId = String(ami.demandeur?.id  );
+          .map((ami: any) => {
+            const userAId = String(
+              ami.userA?.id ??
+                ami.userA?.id_utilisateur ??
+                ami.demandeur?.id ??
+                ami.demandeur?.id_utilisateur ??
+                ami.utilisateur?.id ??
+                ami.utilisateur?.id_utilisateur ??
+                ami.user?.id ??
+                ami.user?.id_utilisateur ??
+                ami.utilisateur_id ??
+                ami.id_user_1 ??
+                ""
+            );
 
-            const userBId = String( ami.ami?.id  );
+            const userBId = String(
+              ami.userB?.id ??
+                ami.userB?.id_utilisateur ??
+                ami.receveur?.id ??
+                ami.receveur?.id_utilisateur ??
+                ami.ami?.id ??
+                ami.ami?.id_utilisateur ??
+                ami.friend?.id ??
+                ami.friend?.id_utilisateur ??
+                ami.ami_id ??
+                ami.id_user_2 ??
+                ""
+            );
 
-            if (userAId === userId) {
+            if (userAId === currentId) {
               return userBId;
             }
 
-            if (userBId === userId) {
+            if (userBId === currentId) {
               return userAId;
             }
 
@@ -45,7 +67,10 @@ export function useVisibleRessources(ressources: Ressource[]) {
 
         setFriendIds(idsAmis);
       } catch (error) {
-        console.log("Erreur lors du chargement de l'utilisateur ou des amis :", error);
+        console.log(
+          "Erreur lors du chargement de l'utilisateur ou des amis :",
+          error
+        );
       }
     }
 
@@ -53,14 +78,23 @@ export function useVisibleRessources(ressources: Ressource[]) {
   }, []);
 
   const visibleRessources = useMemo(() => {
-    return ressources.filter((ressource) => {
+    return ressources.filter((ressource: any) => {
       const isActive =
         ressource.active === true ||
-        ressource.valide === true;
+        ressource.active === 1 ||
+        ressource.est_visible === true ||
+        ressource.est_visible === 1;
 
       const visibilite = ressource.visibilite;
 
-      const authorId = String(getUserId(ressource.auteur.id_utilisateur));
+      const authorId = String(
+        ressource.utilisateur?.id ??
+          ressource.utilisateur?.id_utilisateur ??
+          ressource.auteur?.id ??
+          ressource.auteur?.id_utilisateur ??
+          ressource.utilisateur_id ??
+          ""
+      );
 
       if (!isActive) {
         return false;
@@ -70,11 +104,19 @@ export function useVisibleRessources(ressources: Ressource[]) {
         return true;
       }
 
-      if (visibilite === "private" && authorId === currentUserId) {
+      if (
+        (visibilite === "private" || visibilite === "prive") &&
+        authorId === currentUserId
+      ) {
         return true;
       }
 
-      if (visibilite === "friends" && friendIds.includes(authorId)) {
+      if (
+        (visibilite === "friend" ||
+          visibilite === "friends" ||
+          visibilite === "amis") &&
+        friendIds.includes(authorId)
+      ) {
         return true;
       }
 

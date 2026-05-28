@@ -1,12 +1,12 @@
 import { makeResourcesListStyles } from "@/components/ressources/module.RessourcesList.style";
 import { Colors } from "@/constants/theme";
-
 import { useVisibleRessources } from "@/hooks/use-visibilite-ressources";
 import { apiListCategories, apiListTags } from "@/services/FiltresApi";
 import { apiListRessources } from "@/services/resourcesApi";
 import { Categorie } from "@/types/categories";
 import { Ressource } from "@/types/ressources";
 import { Tag } from "@/types/tags";
+import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { FlatList, Pressable, Text, useColorScheme } from "react-native";
@@ -73,7 +73,7 @@ export default function RessourcesListe() {
 
       list.forEach((r) => {
         map[String(r.id_ressource)] = {
-          views: r.viewsCount ?? 0,
+          views: r.viewsCount ?? r.likeCount ?? 0,
           likesCount: r.likeCount ?? 0,
         };
       });
@@ -90,13 +90,15 @@ export default function RessourcesListe() {
     loadFilters();
   }, []);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      loadRessources();
-    }, 400);
+  useFocusEffect(
+    useCallback(() => {
+      const timeout = setTimeout(() => {
+        loadRessources();
+      }, 400);
 
-    return () => clearTimeout(timeout);
-  }, [search, selectedTypeId, selectedCategorieId, selectedTagIds, loadRessources]);
+      return () => clearTimeout(timeout);
+    }, [loadRessources])
+  );
 
   const toggleTag = (id: string) => {
     setSelectedTagIds((currentTags) => {

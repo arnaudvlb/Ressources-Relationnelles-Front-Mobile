@@ -11,7 +11,6 @@ type Props=Readonly<{
     password : string, 
     setPassword:(text: string) => void,
     confirm : string, 
-     etConfirm: (text: string) => void,
     firstname: string, 
     setFirstname:(text: string) => void,
     name:string , 

@@ -1,14 +1,13 @@
 
+import { apiRegister } from "@/services/authApi";
 import { saveAccessToken } from "@/services/authStorage";
 import { saveCurrentUser } from "@/services/userStorage";
-import { User } from "@/types/users";
 import { isEmailValid, isPasswordValid } from "@/utils/validators";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, View } from "react-native";
 import RegisterAction from "./RegisterAction";
-import { RegisterAvatar } from "./RegisterAvatar";
 import RegisterFields from "./RegisterFields";
 import RegisterHeader from "./RegisterHeader";
 
@@ -36,10 +35,10 @@ export default function RegisterForm({styles,colors}:Props){
 
     const[loading,setLoading]=useState(false);
 
-    //Fonction pour simuler l'api 
-    function wait(ms:number){
-        return new Promise((resolve)=>setTimeout(resolve,ms));
-    }
+    // //Fonction pour simuler l'api 
+    // function wait(ms:number){
+    //     return new Promise((resolve)=>setTimeout(resolve,ms));
+    // }
 
     //Fonction pour recuperer une image dans la galerie 
     async function pickAvatar() {
@@ -105,46 +104,57 @@ export default function RegisterForm({styles,colors}:Props){
         }
 
         //Creation du compte
-        try{
+       try {
             setLoading(true);
 
-            //Simultation d'appel
-            await wait(900);
-
-            //creation du token 
-            const fakeToken=`mock_${Date.now()}`;
-
-            await saveAccessToken(fakeToken);
-
-            //Creation du faux compte user 
-            const fakeUserId=Math.floor(Math.random()*10000)+1;
-            
-            const createadAt = new Date().toISOString();
-
-            const user : User={
-                id_utilisateur: fakeUserId,
+            const payload = {
                 nom: cleanName,
                 prenom: cleanFirstname,
-                telephone: cleanPhone? cleanPhone : null,
+                telephone: cleanPhone ? cleanPhone : null,
                 email: cleanEmail,
                 pseudo: cleanPseudo,
+                motDePasse: cleanPassword,
                 photo_profil: avatar,
-                statut_compte: true,
-                date_creation: createadAt,
-                role: "ROLE_USER",
+            };
+
+            console.log("Payload register envoyé :", payload);
+
+            const response = await apiRegister(payload);
+
+            console.log("Réponse register :", response);
+
+            const token =
+                response?.data?.token ??
+                null;
+
+            const user =
+                response?.data?.user ??
+                null;
+
+            if (!token) {
+                throw new Error("Token non reçu après l'inscription.");
             }
+
+            if (!user) {
+                throw new Error("Utilisateur non reçu après l'inscription.");
+            }
+
+            await saveAccessToken(token);
             await saveCurrentUser(user);
 
             Alert.alert("Compte créé ✅", "Tu es connecté(e) !");
 
             router.replace("/(tabs)");
-        }catch(e:any){
-            Alert.alert("Erreur", e.message || "Une erreur est survenue.");
+            } catch (e: any) {
+            console.log("Erreur register :", e);
 
-        }finally{
+            Alert.alert(
+                "Erreur",
+                e?.message ?? "Une erreur est survenue lors de la création du compte."
+            );
+            } finally {
             setLoading(false);
-        }
-        
+            }
     }
 
     
@@ -179,19 +189,7 @@ export default function RegisterForm({styles,colors}:Props){
               >
 
               </RegisterFields>
-              
-              <RegisterAvatar
-              styles={styles}
-              colors={colors}
-              sectionTitle="Photo de profil"
-              avatar={avatar}
-              handleAction={pickAvatar}
-              loading={loading}
-              
-              >
-
-
-              </RegisterAvatar>
+            
               
               <RegisterAction
               styles={styles}
