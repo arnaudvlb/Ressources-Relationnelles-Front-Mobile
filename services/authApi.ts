@@ -1,4 +1,5 @@
 import { httpRequest } from "@/services/httpClient";
+import { UserAPI } from "@/types/API/usersAPI";
 import { User } from "@/types/users";
 
 
@@ -50,4 +51,20 @@ export async function apiUpdateUserProfile(
     contentType: "application/merge-patch+json",
     body: payload,
   });
+}
+
+
+export async function apiMe(): Promise<UserAPI | null> {
+  try {
+    const response = await httpRequest< UserAPI>({
+      method: "GET",
+      path: "/me",
+      auth: true,
+    });
+
+    return response as UserAPI;
+  } catch (error) {
+    console.log("Erreur apiMe :", error);
+    return null;
+  }
 }

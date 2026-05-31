@@ -55,6 +55,8 @@ export async function mapRessourceAPItoRessource(
 
   console.log("userLike trouvé :", userLike);
   console.log("userFavoris trouvé :", userFavoris);
+  console.log("userFavoris trouvé :", d.visibilite);
+  console.log("visible :", d.valide);
   console.log("========== FIN MAPPER RESSOURCE ==========");
 
   return {
@@ -62,7 +64,7 @@ export async function mapRessourceAPItoRessource(
     titre: d.titre,
     contenu: d.contenu,
     valide: d.valide,
-    active: d.estVisible,
+    active: d.valide,
     date_creation: d.dateCreation,
     date_modification: "",
     visibilite: d.visibilite,

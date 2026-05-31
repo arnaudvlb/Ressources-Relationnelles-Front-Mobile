@@ -1,4 +1,5 @@
 import { getUserId } from "@/config/format";
+import { apiMe } from "@/services/authApi";
 import { apiCreateCommentaire } from "@/services/commentaireApi";
 import { getCurrentUser } from "@/services/userStorage";
 import { Commentaire } from "@/types/commentaires";
@@ -40,12 +41,9 @@ export default function RessourceComments({
   }
 
   async function handleCreateCommentaire() {
-    const currentUser = await getCurrentUser();
+    const currentUser = await apiMe();
 
-    if (!currentUser) {
-      router.push("/login");
-      return;
-    }
+    router.replace("/login");
 
     if (!contenu.trim()) {
       return;

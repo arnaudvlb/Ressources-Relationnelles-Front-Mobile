@@ -78,21 +78,16 @@ export function useVisibleRessources(ressources: Ressource[]) {
   }, []);
 
   const visibleRessources = useMemo(() => {
-    return ressources.filter((ressource: any) => {
-      const isActive =
-        ressource.active === true ||
-        ressource.active === 1 ||
-        ressource.est_visible === true ||
-        ressource.est_visible === 1;
+    return ressources.filter((ressource: Ressource) => {
+      const isActive = ressource.active === true; 
+      
 
       const visibilite = ressource.visibilite;
 
       const authorId = String(
-        ressource.utilisateur?.id ??
-          ressource.utilisateur?.id_utilisateur ??
-          ressource.auteur?.id ??
+      
           ressource.auteur?.id_utilisateur ??
-          ressource.utilisateur_id ??
+          
           ""
       );
 
